@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOLF GAME - スコア管理システム</title>
+
+    <!-- ===== PWA 設定 ===== -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2d7a2d">
+    <!-- iOS Safari 向け -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Golf Game">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- ===== /PWA 設定 ===== -->
     <style>
         * {
             margin: 0;
@@ -1995,5 +2005,19 @@
         document.getElementById('player3').addEventListener('change', playerChangeListener);
         document.getElementById('player4').addEventListener('change', playerChangeListener);
     </script>
+
+    <!-- ===== Service Worker 登録 (PWA オフライン対応) ===== -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/OMK-GLF-APP/service-worker.js', {
+                    scope: '/OMK-GLF-APP/'
+                })
+                .then(reg => console.log('[PWA] Service Worker 登録完了:', reg.scope))
+                .catch(err => console.warn('[PWA] Service Worker 登録失敗:', err));
+            });
+        }
+    </script>
+    <!-- ===== /Service Worker 登録 ===== -->
 </body>
 </html>

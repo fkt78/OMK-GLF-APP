@@ -1,0 +1,26 @@
+{
+  "name": "ゴルフゲーム管理",
+  "short_name": "Golf Game",
+  "description": "OLYMPIC・VEGAS・SKINS・TITLE 4ゲーム対応ゴルフ収支管理アプリ",
+  "start_url": "/OMK-GLF-APP/golf-game.html",
+  "scope": "/OMK-GLF-APP/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a501a",
+  "theme_color": "#2d7a2d",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
