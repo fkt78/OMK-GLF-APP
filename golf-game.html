@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="manifest" href="manifest.json">
     <title>GOLF GAME - スコア管理システム</title>
-    <script>var APP_VERSION='1.0.1';</script>
+    <script>var APP_VERSION='1.0.2';</script>
     <style>
         * {
             margin: 0;
@@ -654,6 +654,66 @@
         const frontNine = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         const backNine = [10, 11, 12, 13, 14, 15, 16, 17, 18];
 
+        // ===== localStorage 自動保存・復元 =====
+        const STORAGE_KEY = 'golf-game-state-v1';
+        function saveGameState() {
+            try {
+                const state = {
+                    players: [
+                        document.getElementById('player1').value,
+                        document.getElementById('player2').value,
+                        document.getElementById('player3').value,
+                        document.getElementById('player4').value,
+                    ],
+                    scoreData,
+                    olympicScoreData,
+                    olympicRoles,
+                    olympicSection,
+                    vegasData,
+                    skinsData,
+                    skinsPrizeMode,
+                    skinsUniformPrize,
+                    titleData,
+                    titlePrizes,
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.warn('[Golf] 保存失敗:', e);
+            }
+        }
+        function loadGameState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return false;
+                const s = JSON.parse(raw);
+                if (s.players) {
+                    ['player1', 'player2', 'player3', 'player4'].forEach((id, i) => {
+                        const el = document.getElementById(id);
+                        if (el && s.players[i]) el.value = s.players[i];
+                    });
+                }
+                if (s.scoreData) scoreData = s.scoreData;
+                if (s.olympicScoreData) olympicScoreData = s.olympicScoreData;
+                if (s.olympicRoles) olympicRoles = s.olympicRoles;
+                if (s.olympicSection) olympicSection = s.olympicSection;
+                if (s.vegasData) vegasData = s.vegasData;
+                if (s.skinsData) skinsData = s.skinsData;
+                if (s.skinsPrizeMode !== undefined) skinsPrizeMode = s.skinsPrizeMode;
+                if (s.skinsUniformPrize !== undefined) skinsUniformPrize = s.skinsUniformPrize;
+                if (s.titleData) titleData = s.titleData;
+                if (s.titlePrizes) titlePrizes = s.titlePrizes;
+                return true;
+            } catch (e) {
+                console.warn('[Golf] 復元失敗:', e);
+                localStorage.removeItem(STORAGE_KEY);
+                return false;
+            }
+        }
+        function clearGameState() {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+        // ===== /localStorage =====
+
         function getPlayers() {
             return [
                 document.getElementById('player1').value || 'A',
@@ -893,7 +953,7 @@
                 html += `<tr><td class="player-cell" style="font-weight:900; text-align:center;">${h}</td>`;
                 players.forEach(p => {
                     const role = olympicScoreData[p][`hole_${h}`] || '';
-                    const icon = role ? roleMap[role].icon : '';
+                    const icon = roleMap[role]?.icon || '';
                     // セル背景: 選択済みは薄い色
                     const bg = role ? '#e8e8e8' : 'white';
                     html += `<td style="text-align:center; padding:3px; background:${bg};">
@@ -918,7 +978,7 @@
                     <td class="player-cell" style="text-align:center;">${label}</td>`;
                 players.forEach(p => {
                     const icons = holeSet
-                        .filter(h => olympicScoreData[p][`hole_${h}`])
+                        .filter(h => olympicScoreData[p][`hole_${h}`] && roleMap[olympicScoreData[p][`hole_${h}`]])
                         .map(h => roleMap[olympicScoreData[p][`hole_${h}`]].icon)
                         .join('');
                     const prize = holeSet.reduce((s, h) => s + (olympicRoles[olympicScoreData[p][`hole_${h}`]] || 0), 0);
@@ -943,7 +1003,7 @@
                 <td class="player-cell" style="text-align:center; color:white;">TOTAL</td>`;
             players.forEach(p => {
                 const icons = holes
-                    .filter(h => olympicScoreData[p][`hole_${h}`])
+                    .filter(h => olympicScoreData[p][`hole_${h}`] && roleMap[olympicScoreData[p][`hole_${h}`]])
                     .map(h => roleMap[olympicScoreData[p][`hole_${h}`]].icon)
                     .join('');
                 const prize = holes.reduce((s, h) => s + (olympicRoles[olympicScoreData[p][`hole_${h}`]] || 0), 0);
@@ -2000,7 +2060,7 @@
             document.getElementById('endGameConfirmBtn').addEventListener('click', () => {
                 document.body.removeChild(overlay);
 
-                // 全ゲームのデータを初期化
+                clearGameState();
                 initScoreData();
                 initOlympicData();
                 initVegasData();
@@ -2012,25 +2072,49 @@
             });
         }
 
-        function switchOlympicSection(section) {
+        function switchOlympicSection(section, evt) {
             olympicSection = section;
             renderOlympicTable();
             calculateOlympic();
-            event.target.parentElement.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
-            event.target.classList.add('active');
+            const btn = evt?.target || document.querySelector('#olympic [data-section="' + section + '"]');
+            if (btn) {
+                btn.parentElement?.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+                btn.classList.add('active');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            initScoreData();
-            initOlympicData();
-            initVegasData();
-            initSkinsData();
-            renderRoleSettings();
+            const restored = loadGameState();
+            if (restored) {
+                renderScoreTable();
+                renderOlympicTable();
+                calculateOlympic();
+                renderVegasTable();
+                renderSkinsPrizeGrid();
+                renderSkinsTable();
+                renderTitleSettings();
+                renderTitleTable();
+                calculateTitle();
+                renderRoleSettings();
+            } else {
+                initScoreData();
+                initOlympicData();
+                initVegasData();
+                initSkinsData();
+                renderRoleSettings();
+            }
+            document.body.addEventListener('input', saveGameState);
+            document.body.addEventListener('change', saveGameState);
+            setInterval(saveGameState, 3000);
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') saveGameState();
+            });
         });
 
         // プレイヤー名が変更されたときだけ全初期化を実行（確認ダイアログ付き）
         const playerChangeListener = (e) => {
             if (confirm('プレイヤー名を変更すると、入力済みのスコアがすべてリセットされます。\n\n本当に変更してもよろしいですか？')) {
+                clearGameState();
                 initScoreData();
                 initOlympicData();
                 initVegasData();
