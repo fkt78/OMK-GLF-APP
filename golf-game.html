@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2d7a2d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Golf Game">
     <link rel="icon" href="icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="manifest" href="manifest.json">
     <title>GOLF GAME - スコア管理システム</title>
     <style>
         * {
@@ -385,9 +391,48 @@
             font-size: 11px;
             padding: 4px;
         }
+
+        /* 新バージョン通知バナー */
+        .update-banner {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #2d7a2d;
+            color: white;
+            padding: 12px 20px;
+            font-weight: 900;
+            text-align: center;
+            z-index: 9999;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+        }
+        .update-banner.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .update-banner button {
+            background: white;
+            color: #2d7a2d;
+            border: none;
+            padding: 8px 20px;
+            font-weight: 900;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .update-banner button:hover {
+            background: #e8f5e9;
+        }
     </style>
 </head>
 <body>
+    <div id="updateBanner" class="update-banner" role="alert">
+        <span>🆕 新バージョンが利用可能です</span>
+        <button type="button" id="updateBtn">更新して表示</button>
+    </div>
     <div class="container">
         <h1>GOLF GAME</h1>
         <div class="header-border">
@@ -1992,6 +2037,42 @@
         document.getElementById('player2').addEventListener('change', playerChangeListener);
         document.getElementById('player3').addEventListener('change', playerChangeListener);
         document.getElementById('player4').addEventListener('change', playerChangeListener);
+
+        // PWA: Service Worker 登録と新バージョン通知
+        if ('serviceWorker' in navigator) {
+            let swRegistration;
+            navigator.serviceWorker.register('service-worker.js').then(reg => {
+                swRegistration = reg;
+                checkForUpdate();
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateBanner(newWorker);
+                        }
+                    });
+                });
+                if (reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg.waiting);
+            });
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                window.location.reload();
+            });
+            function checkForUpdate() {
+                swRegistration && swRegistration.update();
+            }
+            setInterval(checkForUpdate, 60 * 60 * 1000);
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') checkForUpdate();
+            });
+            function showUpdateBanner(worker) {
+                const banner = document.getElementById('updateBanner');
+                const btn = document.getElementById('updateBtn');
+                banner.classList.add('show');
+                btn.onclick = () => {
+                    worker.postMessage({ type: 'SKIP_WAITING' });
+                };
+            }
+        }
     </script>
 </body>
 </html>
