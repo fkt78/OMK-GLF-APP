@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOLF GAME - スコア管理システム</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            border: 8px solid black;
+            background-color: white;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 900;
+            color: black;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .header-border {
+            border-bottom: 4px solid black;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header-border p {
+            font-size: 24px;
+            font-weight: 900;
+            color: black;
+        }
+
+        .player-names {
+            margin-bottom: 30px;
+        }
+
+        .player-names h2 {
+            font-size: 20px;
+            font-weight: 900;
+            color: black;
+            margin-bottom: 15px;
+            border-bottom: 4px solid black;
+            padding-bottom: 8px;
+        }
+
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .player-input-box {
+            border: 4px solid black;
+        }
+
+        .player-input-box > div:first-child {
+            background-color: black;
+            color: white;
+            padding: 8px;
+            font-weight: 900;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .player-input-box input {
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 16px;
+            border: none;
+            border-bottom: 4px solid black;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            border: 4px solid black;
+            padding: 10px 16px;
+            font-weight: 900;
+            cursor: pointer;
+            background-color: white;
+            color: black;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .tab-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .tab-button.active {
+            background-color: black;
+            color: white;
+        }
+
+        .scorecard-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border: 8px solid black;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            font-size: 12px;
+        }
+
+        th {
+            border: 4px solid black;
+            padding: 8px;
+            font-weight: 900;
+            text-align: center;
+            background-color: black;
+            color: white;
+        }
+
+        td {
+            border: 4px solid black;
+            padding: 4px;
+        }
+
+        .player-cell {
+            background-color: #d3d3d3;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .score-input {
+            width: 100%;
+            padding: 4px;
+            text-align: center;
+            font-weight: 900;
+            border: none;
+            border-bottom: 2px solid #999;
+        }
+
+        .score-input:focus {
+            outline: none;
+            background-color: #ffff99;
+        }
+
+        .section-header {
+            background-color: #444;
+            color: white;
+            font-weight: 900;
+        }
+
+        .total-cell {
+            background-color: #ccc;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .select-role {
+            width: 100%;
+            padding: 6px;
+            text-align: center;
+            font-weight: 900;
+            border: none;
+            font-size: 12px;
+        }
+
+        .select-role:focus {
+            outline: none;
+            background-color: #ffff99;
+        }
+
+        .role-settings {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+            border: 8px solid black;
+            background-color: #f0f0f0;
+            padding: 15px;
+        }
+
+        .role-box {
+            border: 4px solid black;
+            background-color: white;
+        }
+
+        .role-box > div:first-child {
+            background-color: black;
+            color: white;
+            padding: 8px;
+            font-weight: 900;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .role-box input {
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            font-weight: 900;
+            border: none;
+        }
+
+        .earnings-container {
+            border: 8px solid black;
+            background-color: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .earnings-container h3 {
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .earnings-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .earnings-card {
+            border: 4px solid black;
+            background-color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .earnings-card-name {
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .earnings-card-amount {
+            font-size: 24px;
+            font-weight: 900;
+            color: black;
+        }
+
+        .settlement-container {
+            border: 8px solid black;
+            background-color: #f0f0f0;
+            padding: 15px;
+        }
+
+        .settlement-container h3 {
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .settlement-item {
+            border: 4px solid black;
+            background-color: white;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 900;
+        }
+
+        .no-payment {
+            border: 4px solid black;
+            background-color: black;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 16px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .hidden-message {
+            border: 8px solid black;
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 18px;
+            color: black;
+        }
+
+        .vegas-settings {
+            border: 8px solid black;
+            background-color: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .vegas-settings h3 {
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            border-bottom: 4px solid black;
+            padding-bottom: 8px;
+        }
+
+        .vegas-row {
+            display: grid;
+            grid-template-columns: auto auto auto;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .vegas-row label {
+            font-weight: 900;
+            font-size: 14px;
+        }
+
+        .vegas-row select, .vegas-row input[type="radio"] {
+            border: 4px solid black;
+            padding: 8px;
+            font-weight: 900;
+        }
+
+        select {
+            padding: 8px 12px;
+            font-weight: 900;
+            border: 4px solid black;
+            cursor: pointer;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .checkbox-cell {
+            text-align: center;
+        }
+
+        .checkbox-cell input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .vegas-score {
+            text-align: center;
+            font-weight: 900;
+            font-size: 14px;
+        }
+
+        .pair-select-cell {
+            text-align: center;
+        }
+
+        .pair-select-cell select {
+            width: 100%;
+            font-size: 11px;
+            padding: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GOLF GAME</h1>
+        <div class="header-border">
+            <p>SCORE MANAGEMENT</p>
+        </div>
+
+        <div class="player-names">
+            <h2>PLAYER NAMES</h2>
+            <div class="player-grid">
+                <div class="player-input-box">
+                    <div>P1</div>
+                    <input type="text" id="player1" value="A" maxlength="8">
+                </div>
+                <div class="player-input-box">
+                    <div>P2</div>
+                    <input type="text" id="player2" value="B" maxlength="8">
+                </div>
+                <div class="player-input-box">
+                    <div>P3</div>
+                    <input type="text" id="player3" value="C" maxlength="8">
+                </div>
+                <div class="player-input-box">
+                    <div>P4</div>
+                    <input type="text" id="player4" value="D" maxlength="8">
+                </div>
+            </div>
+        </div>
+
+        <div style="border: 4px solid black; padding: 15px; margin-bottom: 20px; background-color: #f0f0f0; text-align: center;">
+            <button onclick="endGame();" style="padding: 12px 30px; font-size: 16px; font-weight: 900; background-color: #000; color: white; border: 4px solid black; cursor: pointer; min-width: 200px;">
+                ⏹️ GAME END
+            </button>
+            <div style="font-size: 12px; margin-top: 8px; color: #666;">このボタンを押すまでスコアは保持されます</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('score')">📊 SCORE</button>
+            <button class="tab-button" onclick="switchTab('olympic')">🥇 OLYMPIC</button>
+            <button class="tab-button" onclick="switchTab('vegas')">🎰 LAS VEGAS</button>
+            <button class="tab-button" onclick="switchTab('skins')">🏌️ SKINS</button>
+            <button class="tab-button" onclick="switchTab('nassau')">🎯 NASSAU</button>
+        </div>
+
+        <div id="score" class="tab-content active">
+            <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">SCORECARD</h2>
+            <div class="scorecard-container">
+                <table id="scoreTable"></table>
+            </div>
+        </div>
+
+        <div id="olympic" class="tab-content">
+            <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">OLYMPIC 🥇</h2>
+
+            <div class="role-settings" id="roleSettings"></div>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                <button class="tab-button active" onclick="switchOlympicSection('front')">FRONT 9</button>
+                <button class="tab-button" onclick="switchOlympicSection('back')">BACK 9</button>
+                <button class="tab-button" onclick="switchOlympicSection('total')">TOTAL</button>
+            </div>
+
+            <div class="scorecard-container">
+                <table id="olympicTable"></table>
+            </div>
+
+            <div class="earnings-container">
+                <h3>EARNINGS</h3>
+                <div class="earnings-grid" id="earningsGrid"></div>
+            </div>
+
+            <div class="settlement-container">
+                <h3>SETTLEMENT</h3>
+                <div id="settlementDiv"></div>
+            </div>
+        </div>
+
+        <div id="vegas" class="tab-content">
+            <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">LAS VEGAS 🎰</h2>
+
+            <div class="vegas-settings">
+                <h3>SETTINGS</h3>
+                <div class="vegas-row">
+                    <label>10叩きストッパー:</label>
+                    <input type="checkbox" id="vegasStopper" onchange="renderVegasTable(); calculateVegas();">
+                    <label>有効</label>
+                </div>
+
+                <div class="vegas-row" id="stopperDisplayRow" style="display: none;">
+                    <label>ストッパー表示:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="stopperDisplay" value="0" onchange="renderVegasTable(); calculateVegas();">0</label>
+                        <label><input type="radio" name="stopperDisplay" value="9" checked onchange="renderVegasTable(); calculateVegas();">9</label>
+                    </div>
+                </div>
+
+                <div class="vegas-row">
+                    <label>1ポイント = ¥</label>
+                    <input type="number" id="vegasPointValue" value="1000" onchange="calculateVegas();" style="width: 100px; padding: 8px; font-weight: 900;">
+                </div>
+            </div>
+
+            <div class="scorecard-container">
+                <table id="vegasTable"></table>
+            </div>
+
+            <div class="earnings-container">
+                <h3>SCORE DIFFERENCE</h3>
+                <div class="earnings-grid" id="vegasScoreDiv"></div>
+            </div>
+
+            <div class="settlement-container">
+                <h3>SETTLEMENT</h3>
+                <div id="vegasSettlementDiv"></div>
+            </div>
+        </div>
+
+        <div id="skins" class="tab-content">
+            <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">SKINS 🏌️</h2>
+
+            <div class="skins-settings" style="border: 4px solid black; padding: 15px; margin-bottom: 20px;">
+                <h3 style="font-size: 16px; font-weight: 900; margin-bottom: 15px;">PRIZE SETTINGS MODE</h3>
+                <div style="margin-bottom: 15px; display: flex; gap: 20px;">
+                    <label style="font-weight: 900;">
+                        <input type="radio" name="skinsPrizeMode" value="perHole" checked onchange="skinsPrizeMode = 'perHole'; renderSkinsPrizeGrid(); renderSkinsTable(); calculateSkins();">
+                        ホール別設定
+                    </label>
+                    <label style="font-weight: 900;">
+                        <input type="radio" name="skinsPrizeMode" value="uniform" onchange="skinsPrizeMode = 'uniform'; renderSkinsPrizeGrid(); renderSkinsTable(); calculateSkins();">
+                        一律設定
+                    </label>
+                </div>
+
+                <h3 style="font-size: 16px; font-weight: 900; margin-bottom: 15px;">HOLE PRIZE SETTINGS</h3>
+                <div id="skinsPrizeGrid" style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px;"></div>
+            </div>
+
+            <div class="scorecard-container">
+                <table id="skinsTable"></table>
+            </div>
+
+            <div class="earnings-container">
+                <h3>EARNINGS</h3>
+                <div class="earnings-grid" id="skinsEarningsDiv"></div>
+            </div>
+        </div>
+
+        <div id="nassau" class="tab-content">
+            <div class="hidden-message">🎯 NASSAU<br>この機能は準備中です...</div>
+        </div>
+    </div>
+
+    <script>
+        let scoreData = {};
+        let olympicScoreData = {};
+        let olympicRoles = { gold: 1000, silver: 500, bronze: 300, iron: 100, diamond: 2000 };
+        let olympicSection = 'front';
+        let vegasData = {};
+        let skinsData = {};
+        let skinsPrizeMode = 'perHole';  // 'perHole' = ホール別設定、'uniform' = 一律設定
+        let skinsUniformPrize = 1000;     // 一律設定時の全ホール共通賞金
+
+        const holes = Array.from({ length: 18 }, (_, i) => i + 1);
+        const frontNine = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const backNine = [10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+        function getPlayers() {
+            return [
+                document.getElementById('player1').value || 'A',
+                document.getElementById('player2').value || 'B',
+                document.getElementById('player3').value || 'C',
+                document.getElementById('player4').value || 'D'
+            ];
+        }
+
+        function initScoreData() {
+            const players = getPlayers();
+            scoreData = {};
+            players.forEach(player => {
+                scoreData[player] = {};
+                holes.forEach(hole => {
+                    scoreData[player][`hole_${hole}_stroke`] = '';
+                    scoreData[player][`hole_${hole}_putt`] = '';
+                });
+            });
+            renderScoreTable();
+        }
+
+        function initOlympicData() {
+            const players = getPlayers();
+            olympicScoreData = {};
+            players.forEach(player => {
+                olympicScoreData[player] = {};
+                holes.forEach(hole => {
+                    olympicScoreData[player][`hole_${hole}`] = '';
+                });
+            });
+            renderOlympicTable();
+        }
+
+        // Vegas データ初期化（P1のペア相手を保持）
+        function initVegasData() {
+            const players = getPlayers();
+            vegasData = {};
+            players.forEach(player => {
+                vegasData[player] = {};
+                holes.forEach(hole => {
+                    vegasData[player][`hole_${hole}_br`] = false;
+                });
+            });
+            // ホール毎のP1のペア相手を初期化（デフォルトはP2）
+            holes.forEach(hole => {
+                vegasData[`hole_${hole}_p1_pair`] = '1'; // '1'=P2, '2'=P3, '3'=P4
+            });
+        }
+
+        // P1のペア相手選択からペアを取得
+        function getVegasPairs(hole) {
+            const players = getPlayers();
+            const p1PairIndex = vegasData[`hole_${hole}_p1_pair`] || '1'; // デフォルト P2
+
+            let p1PairPlayer;
+            if (p1PairIndex === '1') p1PairPlayer = players[1]; // P2
+            else if (p1PairIndex === '2') p1PairPlayer = players[2]; // P3
+            else p1PairPlayer = players[3]; // P4
+
+            // P1のペア相手が決まったら、残りがペア2になる
+            const pair1 = [players[0], p1PairPlayer];
+            const pair2 = players.filter(p => !pair1.includes(p));
+
+            return { pair1, pair2 };
+        }
+
+        function renderScoreTable() {
+            const players = getPlayers();
+
+            // scoreData が存在するか確認。存在しなければ初期化（念のため）
+            if (!scoreData || Object.keys(scoreData).length === 0) {
+                initScoreData();
+                return;
+            }
+
+            let html = '<thead><tr class="section-header"><th class="player-cell">PLAYER</th>';
+
+            frontNine.forEach(h => html += `<th>${h}</th>`);
+            html += '<th class="section-header">OUT</th>';
+
+            backNine.forEach(h => html += `<th>${h}</th>`);
+            html += '<th class="section-header">IN</th>';
+            html += '<th class="section-header">TOT</th></tr></thead><tbody>';
+
+            players.forEach(player => {
+                const outStroke = frontNine.reduce((s, h) => s + (parseInt(scoreData[player][`hole_${h}_stroke`]) || 0), 0);
+                const outPutt = frontNine.reduce((s, h) => s + (parseInt(scoreData[player][`hole_${h}_putt`]) || 0), 0);
+                const inStroke = backNine.reduce((s, h) => s + (parseInt(scoreData[player][`hole_${h}_stroke`]) || 0), 0);
+                const inPutt = backNine.reduce((s, h) => s + (parseInt(scoreData[player][`hole_${h}_putt`]) || 0), 0);
+                const total = outStroke + inStroke;
+
+                html += `<tr><td class="player-cell">${player}</td>`;
+
+                frontNine.forEach(h => {
+                    html += `<td><div style="display: flex; flex-direction: column; gap: 2px;">
+                        <input type="number" class="score-input" min="1" value="${scoreData[player][`hole_${h}_stroke`]}"
+                            oninput="updateScore('${player}', ${h}, 'stroke', this.value);" placeholder="S">
+                        <input type="number" class="score-input" min="0" value="${scoreData[player][`hole_${h}_putt`]}"
+                            oninput="updateScore('${player}', ${h}, 'putt', this.value);" placeholder="P">
+                    </div></td>`;
+                });
+                html += `<td class="total-cell"><div>${outStroke || '-'}</div><div style="font-size: 10px; color: #666;">${outPutt}p</div></td>`;
+
+                backNine.forEach(h => {
+                    html += `<td><div style="display: flex; flex-direction: column; gap: 2px;">
+                        <input type="number" class="score-input" min="1" value="${scoreData[player][`hole_${h}_stroke`]}"
+                            oninput="updateScore('${player}', ${h}, 'stroke', this.value);" placeholder="S">
+                        <input type="number" class="score-input" min="0" value="${scoreData[player][`hole_${h}_putt`]}"
+                            oninput="updateScore('${player}', ${h}, 'putt', this.value);" placeholder="P">
+                    </div></td>`;
+                });
+                html += `<td class="total-cell"><div>${inStroke || '-'}</div><div style="font-size: 10px; color: #666;">${inPutt}p</div></td>`;
+                html += `<td class="total-cell"><div>${total || '-'}</div><div style="font-size: 10px;">${outPutt + inPutt}p</div></td></tr>`;
+            });
+
+            html += '</tbody>';
+            document.getElementById('scoreTable').innerHTML = html;
+        }
+
+        function updateScore(player, hole, type, value) {
+            scoreData[player][`hole_${hole}_${type}`] = value;
+        }
+
+        function renderOlympicTable() {
+            const players = getPlayers();
+            const currentHoles = olympicSection === 'front' ? frontNine : olympicSection === 'back' ? backNine : holes;
+
+            let html = '<thead><tr class="section-header"><th>PLAYER</th>';
+            currentHoles.forEach(h => html += `<th>${h}</th>`);
+            html += '</tr></thead><tbody>';
+
+            players.forEach(player => {
+                html += `<tr><td class="player-cell">${player}</td>`;
+                currentHoles.forEach(h => {
+                    const role = olympicScoreData[player][`hole_${h}`];
+                    const bgColor = role ? '#ccc' : 'white';
+                    html += `<td style="background-color: ${bgColor};"><select class="select-role" value="${role}"
+                        onchange="olympicScoreData['${player}']['hole_${h}'] = this.value; renderOlympicTable(); calculateOlympic();">
+                        <option value="">-</option>
+                        <option value="gold">🥇G</option>
+                        <option value="silver">🥈S</option>
+                        <option value="bronze">🥉B</option>
+                        <option value="iron">⚙️I</option>
+                        <option value="diamond">💎D</option>
+                    </select></td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            document.getElementById('olympicTable').innerHTML = html;
+        }
+
+        // Vegas テーブルレンダリング（各プレイヤーの個別スコア表示）
+        function renderVegasTable() {
+            const players = getPlayers();
+            const hasStopper = document.getElementById('vegasStopper').checked;
+            const stopperDisplay = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
+
+            let html = '<thead><tr class="section-header"><th>Hole</th><th>P1 Pair</th><th>P1(' + players[0] + ')</th><th>P2(' + players[1] + ')</th><th>P3(' + players[2] + ')</th><th>P4(' + players[3] + ')</th><th>BR(Pair1)</th><th>BR(Pair2)</th><th>Diff</th></tr></thead><tbody>';
+
+            let frontTotals = { pair1: 0, pair2: 0 };
+            let backTotals = { pair1: 0, pair2: 0 };
+
+            let frontPlayerTotals = {};
+            let backPlayerTotals = {};
+            players.forEach(p => {
+                frontPlayerTotals[p] = 0;
+                backPlayerTotals[p] = 0;
+            });
+
+            const renderHolesGroup = (holeArray, totalsTracker, playerTotalsTracker) => {
+                holeArray.forEach(h => {
+                    const pairs = getVegasPairs(h);
+                    const pair1 = pairs.pair1;
+                    const pair2 = pairs.pair2;
+
+                    const scores = [];
+                    players.forEach(p => {
+                        scores[p] = getHoleScore(p, h, hasStopper, stopperDisplay);
+                    });
+
+                    const p1a_score = scores[pair1[0]];
+                    const p1b_score = scores[pair1[1]];
+                    const p2a_score = scores[pair2[0]];
+                    const p2b_score = scores[pair2[1]];
+
+                    let pair1_score = formatTwoDigit(p1a_score, p1b_score);
+                    let pair2_score = formatTwoDigit(p2a_score, p2b_score);
+
+                    const isBR1 = vegasData[pair1[0]]?.[`hole_${h}_br`] || vegasData[pair1[1]]?.[`hole_${h}_br`];
+                    const isBR2 = vegasData[pair2[0]]?.[`hole_${h}_br`] || vegasData[pair2[1]]?.[`hole_${h}_br`];
+
+                    if (isBR1) pair1_score = reverseTwoDigit(pair1_score);
+                    if (isBR2) pair2_score = reverseTwoDigit(pair2_score);
+
+                    totalsTracker.pair1 += parseInt(pair1_score);
+                    totalsTracker.pair2 += parseInt(pair2_score);
+
+                    // 各プレイヤーのスコアを合計に加算
+                    players.forEach(p => {
+                        const playerScore = pair1.includes(p) ? parseInt(pair1_score) : parseInt(pair2_score);
+                        playerTotalsTracker[p] += playerScore;
+                    });
+
+                    const diff = parseInt(pair1_score) - parseInt(pair2_score);
+
+                    const p1PairIndex = vegasData[`hole_${h}_p1_pair`] || '1';
+                    const pairOptions = [
+                        { value: '1', label: 'P1-P2' },
+                        { value: '2', label: 'P1-P3' },
+                        { value: '3', label: 'P1-P4' }
+                    ];
+
+                    let pairSelectHtml = `<select class="pair-select-cell" onchange="vegasData['hole_${h}_p1_pair'] = this.value; renderVegasTable(); calculateVegas();">`;
+                    pairOptions.forEach(opt => {
+                        pairSelectHtml += `<option value="${opt.value}" ${p1PairIndex === opt.value ? 'selected' : ''}>${opt.label}</option>`;
+                    });
+                    pairSelectHtml += '</select>';
+
+                    html += `<tr>
+                        <td class="player-cell">${h}</td>
+                        <td class="pair-select-cell">${pairSelectHtml}</td>
+                        <td class="vegas-score">${pair1.includes(players[0]) ? pair1_score : pair2_score}</td>
+                        <td class="vegas-score">${pair1.includes(players[1]) ? pair1_score : pair2_score}</td>
+                        <td class="vegas-score">${pair1.includes(players[2]) ? pair1_score : pair2_score}</td>
+                        <td class="vegas-score">${pair1.includes(players[3]) ? pair1_score : pair2_score}</td>
+                        <td class="checkbox-cell"><input type="checkbox" ${isBR1 ? 'checked' : ''} onchange="updateVegasBR('${pair1[0]}', '${pair1[1]}', ${h}, this.checked); renderVegasTable(); calculateVegas();"></td>
+                        <td class="checkbox-cell"><input type="checkbox" ${isBR2 ? 'checked' : ''} onchange="updateVegasBR('${pair2[0]}', '${pair2[1]}', ${h}, this.checked); renderVegasTable(); calculateVegas();"></td>
+                        <td class="total-cell">${diff > 0 ? '+' : ''}${diff}</td>
+                    </tr>`;
+                });
+            };
+
+            // Front 9
+            renderHolesGroup(frontNine, frontTotals, frontPlayerTotals);
+            html += `<tr style="background-color: #ddd; font-weight: 900; border: 4px solid black;">
+                <td class="player-cell" style="border-right: 4px solid black;">Front 9</td>
+                <td style="border-right: 4px solid black; text-align: center; font-size: 12px; color: #666;">MY SCORE</td>
+                <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${frontPlayerTotals[players[0]]}</td>
+                <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${frontPlayerTotals[players[1]]}</td>
+                <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${frontPlayerTotals[players[2]]}</td>
+                <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${frontPlayerTotals[players[3]]}</td>
+                <td colspan="3" style="text-align: center;"></td>
+            </tr>`;
+
+            // Back 9
+            renderHolesGroup(backNine, backTotals, backPlayerTotals);
+            html += `<tr style="background-color: #ddd; font-weight: 900; border: 4px solid black;">
+                <td class="player-cell" style="border-right: 4px solid black;">Back 9</td>
+                <td style="border-right: 4px solid black; text-align: center; font-size: 12px; color: #666;">MY SCORE</td>
+                <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${backPlayerTotals[players[0]]}</td>
+                <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${backPlayerTotals[players[1]]}</td>
+                <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${backPlayerTotals[players[2]]}</td>
+                <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${backPlayerTotals[players[3]]}</td>
+                <td colspan="3" style="text-align: center;"></td>
+            </tr>`;
+
+            // Total
+            const totalPair1 = frontTotals.pair1 + backTotals.pair1;
+            const totalPair2 = frontTotals.pair2 + backTotals.pair2;
+            html += `<tr style="background-color: #000; color: white; font-weight: 900; border: 8px solid black;">
+                <td class="player-cell" style="border-right: 4px solid white;">TOTAL</td>
+                <td style="border-right: 4px solid white; text-align: center; font-size: 12px;">MY SCORE</td>
+                <td style="text-align: center; font-size: 22px; font-weight: 900; padding: 15px;">${frontPlayerTotals[players[0]] + backPlayerTotals[players[0]]}</td>
+                <td style="text-align: center; font-size: 22px; font-weight: 900; padding: 15px;">${frontPlayerTotals[players[1]] + backPlayerTotals[players[1]]}</td>
+                <td style="text-align: center; font-size: 22px; font-weight: 900; padding: 15px;">${frontPlayerTotals[players[2]] + backPlayerTotals[players[2]]}</td>
+                <td style="text-align: center; font-size: 22px; font-weight: 900; padding: 15px;">${frontPlayerTotals[players[3]] + backPlayerTotals[players[3]]}</td>
+                <td colspan="3" style="text-align: center;"></td>
+            </tr>`;
+
+            html += '</tbody>';
+            document.getElementById('vegasTable').innerHTML = html;
+
+            document.getElementById('stopperDisplayRow').style.display = hasStopper ? 'grid' : 'none';
+        }
+
+        function getHoleScore(player, hole, hasStopper, stopperDisplay) {
+            const stroke = parseInt(scoreData[player]?.[`hole_${hole}_stroke`]) || 0;
+            const putt = parseInt(scoreData[player]?.[`hole_${hole}_putt`]) || 0;
+            let score = stroke + putt;
+
+            if (hasStopper && score >= 10) {
+                score = parseInt(stopperDisplay);
+            }
+            return score;
+        }
+
+        function formatTwoDigit(a, b) {
+            const min = Math.min(a, b);
+            const max = Math.max(a, b);
+            // minが0の場合は0を1の位にする（ストッパー値は1の位に来るべき）
+            if (min === 0) {
+                return max + '0';
+            }
+            return '' + min + max;
+        }
+
+        function reverseTwoDigit(score) {
+            const str = score.toString().padStart(2, '0');
+            return str.charAt(1) + str.charAt(0);
+        }
+
+        function updateVegasBR(p1, p2, hole, checked) {
+            if (!vegasData[p1]) vegasData[p1] = {};
+            if (!vegasData[p2]) vegasData[p2] = {};
+            vegasData[p1][`hole_${hole}_br`] = checked;
+            vegasData[p2][`hole_${hole}_br`] = checked;
+        }
+
+        function calculateVegas() {
+            const players = getPlayers();
+            const hasStopper = document.getElementById('vegasStopper').checked;
+            const stopperDisplay = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
+            const pointValue = parseInt(document.getElementById('vegasPointValue').value) || 1000;
+
+            // 各プレイヤーの18ホール合計スコアを計算
+            let playerTotals = {};
+            players.forEach(p => {
+                playerTotals[p] = 0;
+            });
+
+            holes.forEach(h => {
+                const pairs = getVegasPairs(h);
+                const pair1 = pairs.pair1;
+                const pair2 = pairs.pair2;
+
+                const p1a_score = getHoleScore(pair1[0], h, hasStopper, stopperDisplay);
+                const p1b_score = getHoleScore(pair1[1], h, hasStopper, stopperDisplay);
+                const p2a_score = getHoleScore(pair2[0], h, hasStopper, stopperDisplay);
+                const p2b_score = getHoleScore(pair2[1], h, hasStopper, stopperDisplay);
+
+                let pair1_score = parseInt(formatTwoDigit(p1a_score, p1b_score));
+                let pair2_score = parseInt(formatTwoDigit(p2a_score, p2b_score));
+
+                const isBR1 = vegasData[pair1[0]]?.[`hole_${h}_br`] || vegasData[pair1[1]]?.[`hole_${h}_br`];
+                const isBR2 = vegasData[pair2[0]]?.[`hole_${h}_br`] || vegasData[pair2[1]]?.[`hole_${h}_br`];
+
+                if (isBR1) pair1_score = parseInt(reverseTwoDigit(pair1_score.toString().padStart(2, '0')));
+                if (isBR2) pair2_score = parseInt(reverseTwoDigit(pair2_score.toString().padStart(2, '0')));
+
+                // 各プレイヤーの合計に加算
+                playerTotals[pair1[0]] += pair1_score;
+                playerTotals[pair1[1]] += pair1_score;
+                playerTotals[pair2[0]] += pair2_score;
+                playerTotals[pair2[1]] += pair2_score;
+            });
+
+            // 合計スコア計算
+            const totalScore = Object.values(playerTotals).reduce((a, b) => a + b, 0);
+            const averageScore = totalScore / players.length;
+
+            // 各プレイヤーのスコアと決済額を表示
+            let scoreHtml = '';
+            players.forEach(player => {
+                const playerScore = playerTotals[player];
+                const deviation = averageScore - playerScore;
+                const settlementAmount = deviation * pointValue;
+
+                scoreHtml += `<div class="earnings-card">
+                    <div class="earnings-card-name">${player}</div>
+                    <div style="font-size: 12px; margin-bottom: 5px;">スコア: ${playerScore}</div>
+                    <div class="earnings-card-amount">${settlementAmount > 0 ? '+' : ''}¥${Math.round(settlementAmount)}</div>
+                </div>`;
+            });
+            document.getElementById('vegasScoreDiv').innerHTML = scoreHtml;
+
+            // 決済情報
+            let settlementHtml = `<div style="font-size: 14px; font-weight: 900; margin-bottom: 15px; border-bottom: 2px solid black; padding-bottom: 10px;">平均スコア: ${averageScore.toFixed(1)}点 | 合計スコア: ${totalScore}点</div>`;
+
+            // 支払額と受取額をマッピング
+            const settlements = players.map(p => ({
+                player: p,
+                amount: (averageScore - playerTotals[p]) * pointValue
+            })).sort((a, b) => b.amount - a.amount);
+
+            settlements.forEach(s => {
+                if (s.amount !== 0) {
+                    const status = s.amount > 0 ? '受取' : '支払';
+                    settlementHtml += `<div class="settlement-item">
+                        <div>${s.player} (${status})</div>
+                        <div>¥${Math.abs(Math.round(s.amount))}</div>
+                    </div>`;
+                }
+            });
+
+            if (settlements.every(s => s.amount === 0)) {
+                settlementHtml = '<div class="no-payment">NO PAYMENT</div>';
+            }
+
+            document.getElementById('vegasSettlementDiv').innerHTML = settlementHtml;
+        }
+
+        // SKINS 関数
+        function initSkinsData() {
+            skinsData = {};
+            skinsData.carryover = 0;  // キャリーオーバー用（持ち越し賞金）
+            holes.forEach(hole => {
+                skinsData[`hole_${hole}_prize`] = 1000;
+                skinsData[`hole_${hole}_winner`] = '';
+            });
+            renderSkinsPrizeGrid();
+            renderSkinsTable();
+        }
+
+        function renderSkinsPrizeGrid() {
+            let html = '';
+
+            if (skinsPrizeMode === 'perHole') {
+                // ホール別設定モード
+                holes.forEach(h => {
+                    const prize = skinsData[`hole_${h}_prize`] || 1000;
+                    html += `<div style="border: 4px solid black; padding: 10px; text-align: center;">
+                        <div style="font-weight: 900; margin-bottom: 5px;">Hole ${h}</div>
+                        <input type="number" value="${prize}" min="0"
+                            onchange="skinsData['hole_${h}_prize'] = parseInt(this.value) || 1000; renderSkinsTable(); calculateSkins();"
+                            style="width: 80px; padding: 5px; text-align: center; font-weight: 900; border: 2px solid black;">
+                    </div>`;
+                });
+            } else {
+                // 一律設定モード
+                html = `<div style="border: 4px solid black; padding: 15px; text-align: center;">
+                    <div style="font-weight: 900; margin-bottom: 10px; font-size: 16px;">全ホール共通賞金</div>
+                    <input type="number" value="${skinsUniformPrize}" min="0"
+                        onchange="skinsUniformPrize = parseInt(this.value) || 1000; holes.forEach(h => { skinsData['hole_' + h + '_prize'] = skinsUniformPrize; }); renderSkinsTable(); calculateSkins();"
+                        style="width: 120px; padding: 10px; text-align: center; font-weight: 900; border: 4px solid black; font-size: 16px;">
+                    <div style="margin-top: 10px; color: #666; font-size: 12px;">¥/ホール</div>
+                </div>`;
+            }
+
+            document.getElementById('skinsPrizeGrid').innerHTML = html;
+        }
+
+        function renderSkinsTable() {
+            const players = getPlayers();
+            const hasStopper = document.getElementById('vegasStopper').checked;
+            const stopperDisplay = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
+
+            let html = '<thead><tr class="section-header"><th>Hole</th><th>Prize</th>';
+            players.forEach(p => html += `<th>${p}</th>`);
+            html += '</tr></thead><tbody>';
+
+            let frontEarnings = {};
+            let backEarnings = {};
+            players.forEach(p => {
+                frontEarnings[p] = 0;
+                backEarnings[p] = 0;
+            });
+
+            const renderHolesGroup = (holeArray, earningsTracker) => {
+                let currentCarryover = 0;  // このグループ（Front/Back）内でのキャリーオーバー
+
+                holeArray.forEach((h, index) => {
+                    const basePrize = skinsData[`hole_${h}_prize`] || 1000;
+                    // このホールが受け取るキャリーオーバー
+                    const incomingCarryover = currentCarryover;
+                    // 基本賞金 + キャリーオーバー = このホールの総賞金
+                    const totalPrize = basePrize + incomingCarryover;
+
+                    // 各プレイヤーのスコアを取得して最低スコアを判定
+                    let scores = {};
+                    let minScore = Infinity;
+                    players.forEach(p => {
+                        const score = getHoleScore(p, h, hasStopper, stopperDisplay);
+                        scores[p] = score;
+                        minScore = Math.min(minScore, score);
+                    });
+
+                    // 最低スコアのプレイヤーを特定（タイスコアの場合は誰も勝たない）
+                    let autoWinner = '';
+                    let minScoreCount = 0;
+                    let bestScorePlayer = '';
+
+                    for (let p of players) {
+                        if (scores[p] === minScore) {
+                            minScoreCount++;
+                            if (minScoreCount === 1) {
+                                bestScorePlayer = p;
+                            }
+                        }
+                    }
+
+                    // 1人だけがベストスコアの場合は勝者、複数人の場合は持ち越し（誰も勝たない）
+                    if (minScoreCount === 1) {
+                        autoWinner = bestScorePlayer;
+                    }
+
+                    // ユーザーが選択していない場合は自動判定を使用
+                    const winner = skinsData[`hole_${h}_winner`] || autoWinner;
+                    if (autoWinner && !skinsData[`hole_${h}_winner`]) {
+                        skinsData[`hole_${h}_winner`] = autoWinner;
+                        // 勝者が決まったら、基本賞金 + キャリーオーバーを支給
+                        earningsTracker[autoWinner] += totalPrize;
+                        // キャリーオーバーをリセット
+                        currentCarryover = 0;
+                    } else if (winner) {
+                        earningsTracker[winner] += totalPrize;
+                        currentCarryover = 0;
+                    } else {
+                        // 勝者が決まらない場合（タイ）は、基本賞金をキャリーオーバーに追加
+                        currentCarryover += basePrize;
+                    }
+
+                    // 表示用：基本賞金またはキャリーオーバー込みの表示
+                    const displayPrize = incomingCarryover > 0 ? `¥${basePrize} + ¥${incomingCarryover}` : `¥${basePrize}`;
+
+                    html += `<tr>
+                        <td class="player-cell">${h}</td>
+                        <td class="total-cell">${displayPrize}</td>`;
+
+                    players.forEach(p => {
+                        const isChecked = winner === p ? 'checked' : '';
+                        html += `<td class="checkbox-cell" style="text-align: center;">
+                            <input type="radio" name="hole_${h}_winner" value="${p}" ${isChecked}
+                                onchange="skinsData['hole_${h}_winner'] = '${p}'; renderSkinsTable(); calculateSkins();">
+                        </td>`;
+                    });
+
+                    html += `</tr>`;
+                });
+            };
+
+            // Front 9を処理
+            renderHolesGroup(frontNine, frontEarnings);
+
+            // Front 9小計行
+            html += `<tr style="background-color: #f0f0f0; font-weight: 900;">
+                <td class="player-cell">Front 9</td>
+                <td class="total-cell">-</td>`;
+            players.forEach(p => {
+                html += `<td style="text-align: center;">¥${frontEarnings[p]}</td>`;
+            });
+            html += `</tr>`;
+
+            // Back 9を処理
+            renderHolesGroup(backNine, backEarnings);
+
+            // Back 9小計行
+            html += `<tr style="background-color: #f0f0f0; font-weight: 900;">
+                <td class="player-cell">Back 9</td>
+                <td class="total-cell">-</td>`;
+            players.forEach(p => {
+                html += `<td style="text-align: center;">¥${backEarnings[p]}</td>`;
+            });
+            html += `</tr>`;
+
+            // Total行
+            html += `<tr style="background-color: #000; color: white; font-weight: 900;">
+                <td class="player-cell">TOTAL</td>
+                <td class="total-cell">-</td>`;
+            players.forEach(p => {
+                const total = frontEarnings[p] + backEarnings[p];
+                html += `<td style="text-align: center;">¥${total}</td>`;
+            });
+            html += `</tr>`;
+
+            html += '</tbody>';
+            document.getElementById('skinsTable').innerHTML = html;
+        }
+
+        function calculateSkins() {
+            const players = getPlayers();
+            const hasStopper = document.getElementById('vegasStopper').checked;
+            const stopperDisplay = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
+
+            const earnings = {};
+            players.forEach(p => earnings[p] = 0);
+
+            // Front 9 と Back 9 で別々に持ち越しを追跡
+            const calculateEarningsForHoles = (holeArray) => {
+                let currentCarryover = 0;
+                const tempEarnings = {};
+                players.forEach(p => tempEarnings[p] = 0);
+
+                holeArray.forEach(h => {
+                    const basePrize = skinsData[`hole_${h}_prize`] || 1000;
+                    const incomingCarryover = currentCarryover;
+                    const totalPrize = basePrize + incomingCarryover;
+
+                    let scores = {};
+                    let minScore = Infinity;
+                    players.forEach(p => {
+                        const score = getHoleScore(p, h, hasStopper, stopperDisplay);
+                        scores[p] = score;
+                        minScore = Math.min(minScore, score);
+                    });
+
+                    let autoWinner = '';
+                    let minScoreCount = 0;
+                    let bestScorePlayer = '';
+
+                    for (let p of players) {
+                        if (scores[p] === minScore) {
+                            minScoreCount++;
+                            if (minScoreCount === 1) {
+                                bestScorePlayer = p;
+                            }
+                        }
+                    }
+
+                    if (minScoreCount === 1) {
+                        autoWinner = bestScorePlayer;
+                    }
+
+                    const winner = skinsData[`hole_${h}_winner`] || autoWinner;
+                    if (winner) {
+                        tempEarnings[winner] += totalPrize;
+                        currentCarryover = 0;
+                    } else {
+                        currentCarryover += basePrize;
+                    }
+                });
+
+                return tempEarnings;
+            };
+
+            // Front 9 と Back 9 の獲得金を計算
+            const frontEarnings = calculateEarningsForHoles(frontNine);
+            const backEarnings = calculateEarningsForHoles(backNine);
+
+            // 合計を計算
+            players.forEach(p => {
+                earnings[p] = frontEarnings[p] + backEarnings[p];
+            });
+
+            let earningsHtml = '';
+            players.forEach(player => {
+                earningsHtml += `<div class="earnings-card">
+                    <div class="earnings-card-name">${player}</div>
+                    <div class="earnings-card-amount">¥${earnings[player].toLocaleString()}</div>
+                </div>`;
+            });
+            document.getElementById('skinsEarningsDiv').innerHTML = earningsHtml;
+        }
+
+        function renderRoleSettings() {
+            const roles = [
+                { key: 'gold', label: '金', icon: '🥇' },
+                { key: 'silver', label: '銀', icon: '🥈' },
+                { key: 'bronze', label: '銅', icon: '🥉' },
+                { key: 'iron', label: '鉄', icon: '⚙️' },
+                { key: 'diamond', label: 'ダイ', icon: '💎' }
+            ];
+
+            let html = '';
+            roles.forEach(role => {
+                html += `<div class="role-box">
+                    <div>${role.icon}</div>
+                    <input type="number" value="${olympicRoles[role.key]}"
+                        onchange="olympicRoles['${role.key}'] = parseInt(this.value) || 0; calculateOlympic();">
+                </div>`;
+            });
+
+            document.getElementById('roleSettings').innerHTML = html;
+        }
+
+        function calculateOlympic() {
+            const players = getPlayers();
+            const currentHoles = olympicSection === 'front' ? frontNine : olympicSection === 'back' ? backNine : holes;
+
+            const earnings = {};
+            players.forEach(p => earnings[p] = 0);
+
+            players.forEach(player => {
+                currentHoles.forEach(hole => {
+                    const role = olympicScoreData[player][`hole_${hole}`];
+                    if (role) earnings[player] += olympicRoles[role] || 0;
+                });
+            });
+
+            let earningsHtml = '';
+            players.forEach(player => {
+                earningsHtml += `<div class="earnings-card">
+                    <div class="earnings-card-name">${player}</div>
+                    <div class="earnings-card-amount">¥${earnings[player].toLocaleString()}</div>
+                </div>`;
+            });
+            document.getElementById('earningsGrid').innerHTML = earningsHtml;
+
+            const total = Object.values(earnings).reduce((a, b) => a + b, 0);
+            const average = total / players.length;
+            const balances = {};
+            players.forEach(p => balances[p] = earnings[p] - average);
+
+            const settlement = [];
+            const payers = players.filter(p => balances[p] < 0).sort((a, b) => balances[a] - balances[b]);
+            const receivers = players.filter(p => balances[p] > 0).sort((a, b) => balances[b] - balances[a]);
+
+            payers.forEach(payer => {
+                let remaining = Math.abs(balances[payer]);
+                receivers.forEach(receiver => {
+                    if (remaining <= 0.01) return;
+                    const canPay = Math.min(remaining, balances[receiver]);
+                    settlement.push({ from: payer, to: receiver, amount: Math.round(canPay) });
+                    balances[receiver] -= canPay;
+                    remaining -= canPay;
+                });
+            });
+
+            let settlementHtml = '';
+            if (settlement.length > 0) {
+                settlement.forEach(item => {
+                    settlementHtml += `<div class="settlement-item">
+                        <div>${item.from} → ${item.to}</div>
+                        <div>¥${item.amount.toLocaleString()}</div>
+                    </div>`;
+                });
+            } else {
+                settlementHtml = '<div class="no-payment">NO PAYMENT</div>';
+            }
+            document.getElementById('settlementDiv').innerHTML = settlementHtml;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // タブ表示時のレンダリングのみ実行（初期化は行わない）
+            // SCORE タブに戻る時も、Vegas と Skins を再計算（スコア変更が反映されるよう）
+            if (tabName === 'score') {
+                renderScoreTable();
+                renderVegasTable(); // Vegas テーブルも最新化（表示はしないが計算用）
+                calculateVegas();
+                calculateSkins(); // Skins の計算も実行
+            }
+            if (tabName === 'olympic') { renderOlympicTable(); renderRoleSettings(); calculateOlympic(); }
+            if (tabName === 'vegas') { renderVegasTable(); calculateVegas(); }
+            if (tabName === 'skins') { renderSkinsPrizeGrid(); renderSkinsTable(); calculateSkins(); }
+        }
+
+        function endGame() {
+            // 確認ダイアログを表示
+            if (confirm('ゲームを終了してスコアをすべてリセットしてもよろしいですか？\n\nこのアクション後、入力されたスコアはすべて削除されます。')) {
+                // 全ゲームのデータを初期化
+                initScoreData();
+                initOlympicData();
+                initVegasData();
+                initSkinsData();
+
+                // SCOREタブに切り替え
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+                document.getElementById('score').classList.add('active');
+                document.querySelectorAll('.tab-button')[0].classList.add('active');
+
+                // 成功メッセージ
+                alert('ゲーム終了。スコアをリセットしました。新しいゲームを開始できます。');
+            }
+        }
+
+        function switchOlympicSection(section) {
+            olympicSection = section;
+            renderOlympicTable();
+            calculateOlympic();
+            event.target.parentElement.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initScoreData();
+            initOlympicData();
+            initVegasData();
+            initSkinsData();
+            renderRoleSettings();
+        });
+
+        // プレイヤー名が変更されたときだけ全初期化を実行（確認ダイアログ付き）
+        const playerChangeListener = (e) => {
+            if (confirm('プレイヤー名を変更すると、入力済みのスコアがすべてリセットされます。\n\n本当に変更してもよろしいですか？')) {
+                initScoreData();
+                initOlympicData();
+                initVegasData();
+                initSkinsData();
+                renderRoleSettings();
+            } else {
+                // キャンセルされた場合は、元の値に戻す
+                e.target.value = e.target.value; // placeholder - 実装上は前回値に戻すが、簡易版のため
+            }
+        };
+        document.getElementById('player1').addEventListener('change', playerChangeListener);
+        document.getElementById('player2').addEventListener('change', playerChangeListener);
+        document.getElementById('player3').addEventListener('change', playerChangeListener);
+        document.getElementById('player4').addEventListener('change', playerChangeListener);
+    </script>
+</body>
+</html>
