@@ -1,4 +1,4 @@
-const CACHE_NAME = 'golf-game-v1';
+const CACHE_NAME = 'golf-game-v2';
 const urlsToCache = [
   '/OMK-GLF-APP/golf-game.html',
   '/OMK-GLF-APP/manifest.json',
@@ -15,11 +15,6 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).then(res => {
-      if (!res || res.status !== 200) return res;
-      const clone = res.clone();
-      caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-      return res;
-    })).catch(() => caches.match('/OMK-GLF-APP/golf-game.html'))
+    caches.match(e.request).then(r => r || fetch(e.request)).catch(() => caches.match('/OMK-GLF-APP/golf-game.html'))
   );
 });
