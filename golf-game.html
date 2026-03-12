@@ -11,6 +11,7 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="manifest" href="manifest.json">
     <title>GOLF GAME - スコア管理システム</title>
+    <script>var APP_VERSION='1.0.1';</script>
     <style>
         * {
             margin: 0;
@@ -426,6 +427,12 @@
         .update-banner button:hover {
             background: #e8f5e9;
         }
+        .version-display {
+            font-size: 11px;
+            color: #666;
+            font-weight: 700;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -436,7 +443,7 @@
     <div class="container">
         <h1>GOLF GAME</h1>
         <div class="header-border">
-            <p>SCORE MANAGEMENT</p>
+            <p>SCORE MANAGEMENT <span class="version-display" title="エラー報告時にこのバージョン番号をお知らせください">v<span id="appVersion">-</span></span></p>
         </div>
 
         <div class="player-names">
@@ -629,6 +636,7 @@
     </div>
 
     <script>
+        document.getElementById('appVersion').textContent = typeof APP_VERSION !== 'undefined' ? APP_VERSION : '-';
         let scoreData = {};
         let olympicScoreData = {};
         let olympicRoles = { gold: 1000, silver: 500, bronze: 300, iron: 100, diamond: 2000 };
