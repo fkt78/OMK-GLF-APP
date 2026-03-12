@@ -1,2023 +1,4235 @@
 <!DOCTYPE html>
+
 <html lang="ja">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>GOLF GAME - スコア管理システム</title>
 
+ 
+
     <!-- ===== PWA 設定 ===== -->
+
     <link rel="manifest" href="manifest.json">
+
     <meta name="theme-color" content="#2d7a2d">
+
     <!-- iOS Safari 向け -->
+
     <meta name="apple-mobile-web-app-capable" content="yes">
+
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <meta name="apple-mobile-web-app-title" content="Golf Game">
+
     <link rel="apple-touch-icon" href="icon-192.png">
+
     <!-- ===== /PWA 設定 ===== -->
+
     <style>
+
         * {
+
             margin: 0;
+
             padding: 0;
+
             box-sizing: border-box;
+
         }
+
+ 
 
         body {
+
             font-family: Arial, sans-serif;
+
             background-color: white;
+
             padding: 20px;
+
         }
+
+ 
 
         .container {
+
             max-width: 1400px;
+
             margin: 0 auto;
+
             border: 8px solid black;
+
             background-color: white;
+
             padding: 20px;
+
         }
+
+ 
 
         h1 {
+
             font-size: 48px;
+
             font-weight: 900;
+
             color: black;
+
             margin-bottom: 10px;
+
             letter-spacing: 2px;
+
         }
+
+ 
 
         .header-border {
+
             border-bottom: 4px solid black;
+
             padding-bottom: 10px;
+
             margin-bottom: 20px;
+
         }
+
+ 
 
         .header-border p {
+
             font-size: 24px;
+
             font-weight: 900;
+
             color: black;
+
         }
+
+ 
 
         .player-names {
+
             margin-bottom: 30px;
+
         }
+
+ 
 
         .player-names h2 {
+
             font-size: 20px;
+
             font-weight: 900;
+
             color: black;
+
             margin-bottom: 15px;
+
             border-bottom: 4px solid black;
+
             padding-bottom: 8px;
+
         }
+
+ 
 
         .player-grid {
+
             display: grid;
+
             grid-template-columns: repeat(4, 1fr);
+
             gap: 10px;
+
             margin-bottom: 15px;
+
         }
+
+ 
 
         .player-input-box {
+
             border: 4px solid black;
+
         }
+
+ 
 
         .player-input-box > div:first-child {
+
             background-color: black;
+
             color: white;
+
             padding: 8px;
+
             font-weight: 900;
+
             text-align: center;
+
             font-size: 12px;
+
         }
+
+ 
 
         .player-input-box input {
+
             width: 100%;
+
             padding: 12px;
+
             text-align: center;
+
             font-weight: 900;
+
             font-size: 16px;
+
             border: none;
+
             border-bottom: 4px solid black;
+
         }
+
+ 
 
         .tabs {
+
             display: flex;
+
             gap: 8px;
+
             margin-bottom: 20px;
+
             flex-wrap: wrap;
+
         }
+
+ 
 
         .tab-button {
+
             border: 4px solid black;
+
             padding: 10px 16px;
+
             font-weight: 900;
+
             cursor: pointer;
+
             background-color: white;
+
             color: black;
+
             transition: all 0.2s;
+
             font-size: 14px;
+
         }
+
+ 
 
         .tab-button:hover {
+
             background-color: #f0f0f0;
+
         }
+
+ 
 
         .tab-button.active {
+
             background-color: black;
+
             color: white;
+
         }
+
+ 
 
         .scorecard-container {
+
             overflow-x: auto;
+
             margin-bottom: 20px;
+
             border: 8px solid black;
+
         }
+
+ 
 
         table {
+
             width: 100%;
+
             border-collapse: collapse;
+
             background-color: white;
+
             font-size: 12px;
+
         }
+
+ 
 
         th {
+
             border: 4px solid black;
+
             padding: 8px;
+
             font-weight: 900;
+
             text-align: center;
+
             background-color: black;
+
             color: white;
+
         }
+
+ 
 
         td {
+
             border: 4px solid black;
+
             padding: 4px;
+
         }
+
+ 
 
         .player-cell {
+
             background-color: #d3d3d3;
+
             font-weight: 900;
+
             text-align: center;
+
         }
+
+ 
 
         .score-input {
+
             width: 100%;
+
             padding: 4px;
+
             text-align: center;
+
             font-weight: 900;
+
             border: none;
+
             border-bottom: 2px solid #999;
+
         }
+
+ 
 
         .score-input:focus {
+
             outline: none;
+
             background-color: #ffff99;
+
         }
+
+ 
 
         .section-header {
+
             background-color: #444;
+
             color: white;
+
             font-weight: 900;
+
         }
+
+ 
 
         .total-cell {
+
             background-color: #ccc;
+
             font-weight: 900;
+
             text-align: center;
+
         }
+
+ 
 
         .select-role {
+
             width: 100%;
+
             padding: 6px;
+
             text-align: center;
+
             font-weight: 900;
+
             border: none;
+
             font-size: 12px;
+
         }
+
+ 
 
         .select-role:focus {
+
             outline: none;
+
             background-color: #ffff99;
+
         }
+
+ 
 
         .role-settings {
+
             display: grid;
+
             grid-template-columns: repeat(5, 1fr);
+
             gap: 8px;
+
             margin-bottom: 20px;
+
             border: 8px solid black;
+
             background-color: #f0f0f0;
+
             padding: 15px;
+
         }
+
+ 
 
         .role-box {
+
             border: 4px solid black;
+
             background-color: white;
+
         }
+
+ 
 
         .role-box > div:first-child {
+
             background-color: black;
+
             color: white;
+
             padding: 8px;
+
             font-weight: 900;
+
             text-align: center;
+
             font-size: 20px;
+
         }
+
+ 
 
         .role-box input {
+
             width: 100%;
+
             padding: 10px;
+
             text-align: center;
+
             font-weight: 900;
+
             border: none;
+
         }
+
+ 
 
         .earnings-container {
+
             border: 8px solid black;
+
             background-color: #f0f0f0;
+
             padding: 15px;
+
             margin-bottom: 20px;
+
         }
+
+ 
 
         .earnings-container h3 {
+
             font-size: 18px;
+
             font-weight: 900;
+
             margin-bottom: 15px;
+
         }
+
+ 
 
         .earnings-grid {
+
             display: grid;
+
             grid-template-columns: repeat(4, 1fr);
+
             gap: 10px;
+
         }
+
+ 
 
         .earnings-card {
+
             border: 4px solid black;
+
             background-color: white;
+
             padding: 15px;
+
             text-align: center;
+
         }
+
+ 
 
         .earnings-card-name {
+
             font-weight: 900;
+
             margin-bottom: 8px;
+
         }
+
+ 
 
         .earnings-card-amount {
+
             font-size: 24px;
+
             font-weight: 900;
+
             color: black;
+
         }
+
+ 
 
         .settlement-container {
+
             border: 8px solid black;
+
             background-color: #f0f0f0;
+
             padding: 15px;
+
         }
+
+ 
 
         .settlement-container h3 {
+
             font-size: 18px;
+
             font-weight: 900;
+
             margin-bottom: 15px;
+
         }
+
+ 
 
         .settlement-item {
+
             border: 4px solid black;
+
             background-color: white;
+
             padding: 12px;
+
             margin-bottom: 8px;
+
             display: flex;
+
             justify-content: space-between;
+
             font-weight: 900;
+
         }
+
+ 
 
         .no-payment {
+
             border: 4px solid black;
+
             background-color: black;
+
             color: white;
+
             padding: 15px;
+
             text-align: center;
+
             font-weight: 900;
+
             font-size: 16px;
+
         }
+
+ 
 
         .tab-content {
+
             display: none;
+
         }
+
+ 
 
         .tab-content.active {
+
             display: block;
+
         }
+
+ 
 
         .hidden-message {
+
             border: 8px solid black;
+
             background-color: #f0f0f0;
+
             padding: 20px;
+
             text-align: center;
+
             font-weight: 900;
+
             font-size: 18px;
+
             color: black;
+
         }
+
+ 
 
         .vegas-settings {
+
             border: 8px solid black;
+
             background-color: #f0f0f0;
+
             padding: 15px;
+
             margin-bottom: 20px;
+
         }
+
+ 
 
         .vegas-settings h3 {
+
             font-size: 18px;
+
             font-weight: 900;
+
             margin-bottom: 15px;
+
             border-bottom: 4px solid black;
+
             padding-bottom: 8px;
+
         }
+
+ 
 
         .vegas-row {
+
             display: grid;
+
             grid-template-columns: auto auto auto;
+
             gap: 15px;
+
             margin-bottom: 15px;
+
             align-items: center;
+
         }
+
+ 
 
         .vegas-row label {
+
             font-weight: 900;
+
             font-size: 14px;
+
         }
+
+ 
 
         .vegas-row select, .vegas-row input[type="radio"] {
+
             border: 4px solid black;
+
             padding: 8px;
+
             font-weight: 900;
+
         }
+
+ 
 
         select {
+
             padding: 8px 12px;
+
             font-weight: 900;
+
             border: 4px solid black;
+
             cursor: pointer;
+
         }
+
+ 
 
         .radio-group {
+
             display: flex;
+
             gap: 15px;
+
         }
+
+ 
 
         .radio-group label {
+
             display: flex;
+
             align-items: center;
+
             gap: 5px;
+
         }
+
+ 
 
         .checkbox-cell {
+
             text-align: center;
+
         }
+
+ 
 
         .checkbox-cell input[type="checkbox"] {
+
             width: 18px;
+
             height: 18px;
+
             cursor: pointer;
+
         }
+
+ 
 
         .vegas-score {
+
             text-align: center;
+
             font-weight: 900;
+
             font-size: 14px;
+
         }
+
+ 
 
         .pair-select-cell {
+
             text-align: center;
+
         }
+
+ 
 
         .pair-select-cell select {
+
             width: 100%;
+
             font-size: 11px;
+
             padding: 4px;
+
         }
+
     </style>
+
 </head>
+
 <body>
+
     <div class="container">
+
         <h1>GOLF GAME</h1>
+
         <div class="header-border">
+
             <p>SCORE MANAGEMENT</p>
+
         </div>
+
+ 
 
         <div class="player-names">
+
             <h2>PLAYER NAMES</h2>
+
             <div class="player-grid">
+
                 <div class="player-input-box">
+
                     <div>P1</div>
+
                     <input type="text" id="player1" value="A" maxlength="8">
+
                 </div>
+
                 <div class="player-input-box">
+
                     <div>P2</div>
+
                     <input type="text" id="player2" value="B" maxlength="8">
+
                 </div>
+
                 <div class="player-input-box">
+
                     <div>P3</div>
+
                     <input type="text" id="player3" value="C" maxlength="8">
+
                 </div>
+
                 <div class="player-input-box">
+
                     <div>P4</div>
+
                     <input type="text" id="player4" value="D" maxlength="8">
+
                 </div>
+
             </div>
+
         </div>
+
+ 
 
         <div style="border: 4px solid black; padding: 15px; margin-bottom: 20px; background-color: #f0f0f0; text-align: center;">
+
             <button onclick="endGame();" style="padding: 12px 30px; font-size: 16px; font-weight: 900; background-color: #000; color: white; border: 4px solid black; cursor: pointer; min-width: 200px;">
+
                 ⏹️ GAME END
+
             </button>
+
             <!-- ===== TEST BUTTONS: 本番環境で削除 ===== -->
+
             <button onclick="fillTestData('front');" style="padding: 12px 20px; font-size: 14px; font-weight: 900; background-color: #2a6496; color: white; border: 4px solid black; cursor: pointer; margin-left: 10px;">
+
                 🎲 FRONT 9 テスト
+
             </button>
+
             <button onclick="fillTestData('back');" style="padding: 12px 20px; font-size: 14px; font-weight: 900; background-color: #2a6496; color: white; border: 4px solid black; cursor: pointer; margin-left: 6px;">
+
                 🎲 BACK 9 テスト
+
             </button>
+
             <!-- ===== /TEST BUTTONS ===== -->
+
             <div style="font-size: 12px; margin-top: 8px; color: #666;">このボタンを押すまでスコアは保持されます</div>
+
         </div>
+
+ 
 
         <div class="tabs">
+
             <button class="tab-button active" onclick="switchTab('score')">📊 SCORE</button>
+
             <button class="tab-button" onclick="switchTab('olympic')">🥇 OLYMPIC</button>
+
             <button class="tab-button" onclick="switchTab('vegas')">🎰 LAS VEGAS</button>
+
             <button class="tab-button" onclick="switchTab('skins')">🏌️ SKINS</button>
+
             <button class="tab-button" onclick="switchTab('nassau')">🏆 TITLE</button>
+
             <button class="tab-button" onclick="switchTab('total')">💰 TOTAL</button>
+
         </div>
+
+ 
 
         <div id="score" class="tab-content active">
+
             <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">SCORECARD</h2>
+
             <div class="scorecard-container">
+
                 <table id="scoreTable"></table>
+
             </div>
+
         </div>
 
+ 
+
         <div id="olympic" class="tab-content">
+
             <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">OLYMPIC 🥇</h2>
+
+ 
 
             <div class="role-settings" id="roleSettings"></div>
 
+ 
+
             <div class="scorecard-container">
+
                 <table id="olympicTable"></table>
+
             </div>
+
+ 
 
             <div class="earnings-container">
+
                 <h3>EARNINGS</h3>
+
                 <div class="earnings-grid" id="earningsGrid"></div>
+
             </div>
 
+ 
+
             <div class="settlement-container">
+
                 <h3>SETTLEMENT</h3>
+
                 <div id="settlementDiv"></div>
+
             </div>
+
         </div>
+
+ 
 
         <div id="vegas" class="tab-content">
+
             <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">LAS VEGAS 🎰</h2>
 
+ 
+
             <div class="vegas-settings">
+
                 <h3>SETTINGS</h3>
+
                 <div class="vegas-row">
+
                     <label>10叩きストッパー:</label>
+
                     <input type="checkbox" id="vegasStopper" onchange="renderVegasTable(); calculateVegas();">
+
                     <label>有効</label>
+
                 </div>
+
+ 
 
                 <div class="vegas-row" id="stopperDisplayRow" style="display: none;">
+
                     <label>ストッパー表示:</label>
+
                     <div class="radio-group">
+
                         <label><input type="radio" name="stopperDisplay" value="0" onchange="renderVegasTable(); calculateVegas();">0</label>
+
                         <label><input type="radio" name="stopperDisplay" value="9" checked onchange="renderVegasTable(); calculateVegas();">9</label>
+
                     </div>
+
                 </div>
+
+ 
 
                 <div class="vegas-row">
+
                     <label>1ポイント = ¥</label>
+
                     <input type="number" id="vegasPointValue" value="1000" onchange="calculateVegas();" style="width: 100px; padding: 8px; font-weight: 900;">
+
                 </div>
+
             </div>
+
+ 
 
             <div class="scorecard-container">
+
                 <table id="vegasTable"></table>
+
             </div>
+
+ 
 
             <div class="earnings-container">
+
                 <h3>SCORE DIFFERENCE</h3>
+
                 <div class="earnings-grid" id="vegasScoreDiv"></div>
+
             </div>
 
+ 
+
             <div class="settlement-container">
+
                 <h3>SETTLEMENT</h3>
+
                 <div id="vegasSettlementDiv"></div>
+
             </div>
+
         </div>
+
+ 
 
         <div id="skins" class="tab-content">
+
             <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">SKINS 🏌️</h2>
 
+ 
+
             <div class="skins-settings" style="border: 4px solid black; padding: 15px; margin-bottom: 20px;">
+
                 <h3 style="font-size: 16px; font-weight: 900; margin-bottom: 15px;">PRIZE SETTINGS MODE</h3>
+
                 <div style="margin-bottom: 15px; display: flex; gap: 20px;">
+
                     <label style="font-weight: 900;">
+
                         <input type="radio" name="skinsPrizeMode" value="perHole" checked onchange="skinsPrizeMode = 'perHole'; renderSkinsPrizeGrid(); renderSkinsTable(); calculateSkins();">
+
                         ホール別設定
+
                     </label>
+
                     <label style="font-weight: 900;">
+
                         <input type="radio" name="skinsPrizeMode" value="uniform" onchange="skinsPrizeMode = 'uniform'; renderSkinsPrizeGrid(); renderSkinsTable(); calculateSkins();">
+
                         一律設定
+
                     </label>
+
                 </div>
 
+ 
+
                 <h3 style="font-size: 16px; font-weight: 900; margin-bottom: 15px;">HOLE PRIZE SETTINGS</h3>
+
                 <div id="skinsPrizeGrid" style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px;"></div>
+
             </div>
+
+ 
 
             <div class="scorecard-container">
+
                 <table id="skinsTable"></table>
+
             </div>
+
+ 
 
             <div class="earnings-container">
+
                 <h3>EARNINGS</h3>
+
                 <div class="earnings-grid" id="skinsEarningsDiv"></div>
+
             </div>
 
+ 
+
             <div class="settlement-container">
+
                 <h3>SETTLEMENT</h3>
+
                 <div id="skinsSettlementDiv"></div>
+
             </div>
+
         </div>
+
+ 
 
         <div id="nassau" class="tab-content">
+
             <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">TITLE 🏆</h2>
 
+ 
+
             <!-- 賞金設定（OLYMPICのrole-settingsと同スタイル） -->
+
             <div class="role-settings" id="titleSettings"></div>
 
+ 
+
             <!-- ホール×プレイヤーのドロップダウン表 -->
+
             <div class="scorecard-container">
+
                 <table id="titleTable"></table>
+
             </div>
+
+ 
 
             <!-- EARNINGS -->
+
             <div class="earnings-container">
+
                 <h3>EARNINGS</h3>
+
                 <div class="earnings-grid" id="titleEarningsDiv"></div>
+
             </div>
+
+ 
 
             <!-- SETTLEMENT -->
+
             <div class="settlement-container">
+
                 <h3>SETTLEMENT</h3>
+
                 <div id="titleSettlementDiv"></div>
+
             </div>
+
         </div>
+
+ 
 
         <!-- ========== TOTAL タブ ========== -->
+
         <div id="total" class="tab-content">
+
             <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 15px; border-bottom: 4px solid black; padding-bottom: 8px;">💰 TOTAL SETTLEMENT</h2>
 
+ 
+
             <!-- 各ゲーム内訳テーブル -->
+
             <div class="scorecard-container" style="margin-bottom: 24px;">
+
                 <table id="totalBreakdownTable"></table>
+
             </div>
+
+ 
 
             <!-- 合計精算 -->
+
             <div class="settlement-container">
+
                 <h3>FINAL SETTLEMENT</h3>
+
                 <div id="totalSettlementDiv"></div>
+
             </div>
+
         </div>
+
     </div>
 
+ 
+
     <script>
+
         let scoreData = {};
+
         let olympicScoreData = {};
+
         let olympicRoles = { gold: 1000, silver: 500, bronze: 300, iron: 100, diamond: 2000 };
+
         let olympicSection = 'front';
+
         let vegasData = {};
+
         let skinsData = {};
+
         let skinsPrizeMode = 'perHole';  // 'perHole' = ホール別設定、'uniform' = 一律設定
+
         let skinsUniformPrize = 1000;     // 一律設定時の全ホール共通賞金
 
+ 
+
         // TITLEタブ（ニアピン・ドラコン）用データ
+
         let titleData = {};               // { nearpin_h1_winner: 'A', drakon_h1_winner: '' ... }
+
         let titlePrizes = { nearpin: 3000, drakon: 3000 }; // 各タイトルの賞金
 
+ 
+
         const holes = Array.from({ length: 18 }, (_, i) => i + 1);
+
         const frontNine = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
         const backNine = [10, 11, 12, 13, 14, 15, 16, 17, 18];
 
-        function getPlayers() {
-            return [
-                document.getElementById('player1').value || 'A',
-                document.getElementById('player2').value || 'B',
-                document.getElementById('player3').value || 'C',
-                document.getElementById('player4').value || 'D'
-            ];
+ 
+
+        // ===== localStorage 自動保存・復元 =====
+
+        const STORAGE_KEY = 'golf-game-state-v1';
+
+ 
+
+        // 全ゲームデータをlocalStorageに保存する
+
+        function saveGameState() {
+
+            try {
+
+                const state = {
+
+                    players: [
+
+                        document.getElementById('player1').value,
+
+                        document.getElementById('player2').value,
+
+                        document.getElementById('player3').value,
+
+                        document.getElementById('player4').value,
+
+                    ],
+
+                    scoreData,
+
+                    olympicScoreData,
+
+                    olympicRoles,
+
+                    olympicSection,
+
+                    vegasData,
+
+                    skinsData,
+
+                    skinsPrizeMode,
+
+                    skinsUniformPrize,
+
+                    titleData,
+
+                    titlePrizes,
+
+                };
+
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+            } catch(e) {
+
+                console.warn('[Golf] 保存失敗:', e);
+
+            }
+
         }
+
+ 
+
+        // ページ起動時にlocalStorageから復元する。成功時はtrueを返す
+
+        function loadGameState() {
+
+            try {
+
+                const raw = localStorage.getItem(STORAGE_KEY);
+
+                if (!raw) return false;
+
+                const s = JSON.parse(raw);
+
+ 
+
+                // プレイヤー名を復元
+
+                if (s.players) {
+
+                    ['player1','player2','player3','player4'].forEach((id, i) => {
+
+                        if (s.players[i]) document.getElementById(id).value = s.players[i];
+
+                    });
+
+                }
+
+                // 各データを復元（存在する場合のみ上書き）
+
+                if (s.scoreData)                        scoreData           = s.scoreData;
+
+                if (s.olympicScoreData)                 olympicScoreData    = s.olympicScoreData;
+
+                if (s.olympicRoles)                     olympicRoles        = s.olympicRoles;
+
+                if (s.olympicSection)                   olympicSection      = s.olympicSection;
+
+                if (s.vegasData)                        vegasData           = s.vegasData;
+
+                if (s.skinsData)                        skinsData           = s.skinsData;
+
+                if (s.skinsPrizeMode  !== undefined)    skinsPrizeMode      = s.skinsPrizeMode;
+
+                if (s.skinsUniformPrize !== undefined)  skinsUniformPrize   = s.skinsUniformPrize;
+
+                if (s.titleData)                        titleData           = s.titleData;
+
+                if (s.titlePrizes)                      titlePrizes         = s.titlePrizes;
+
+ 
+
+                console.log('[Golf] ゲームデータを復元しました');
+
+                return true;
+
+            } catch(e) {
+
+                console.warn('[Golf] 復元失敗（データ破損の可能性）:', e);
+
+                localStorage.removeItem(STORAGE_KEY);
+
+                return false;
+
+            }
+
+        }
+
+ 
+
+        // GAME END時にlocalStorageを消去する
+
+        function clearGameState() {
+
+            localStorage.removeItem(STORAGE_KEY);
+
+            console.log('[Golf] ゲームデータをクリアしました');
+
+        }
+
+        // ===== /localStorage 自動保存・復元 =====
+
+ 
+
+        function getPlayers() {
+
+            return [
+
+                document.getElementById('player1').value || 'A',
+
+                document.getElementById('player2').value || 'B',
+
+                document.getElementById('player3').value || 'C',
+
+                document.getElementById('player4').value || 'D'
+
+            ];
+
+        }
+
+ 
 
         function initScoreData() {
+
             const players = getPlayers();
+
             scoreData = {};
+
             players.forEach(player => {
+
                 scoreData[player] = {};
+
                 holes.forEach(hole => {
+
                     scoreData[player][`hole_${hole}_stroke`] = '';
+
                     scoreData[player][`hole_${hole}_putt`] = '';
+
                 });
+
             });
+
             renderScoreTable();
+
         }
+
+ 
 
         // ===== TEST FUNCTION: 本番環境で削除 =====
+
         // ゴルフらしいスコアを各ホールの入力欄に直接セットする
+
         // range: 'front'=1〜9番, 'back'=10〜18番
+
         function fillTestData(range) {
+
             const players = getPlayers();
+
             const targetHoles = range === 'front' ? frontNine : backNine;
 
+ 
+
             // 重み付きストローク乱数（大叩き込み）
+
             // 3:バーディ 4:パー 5:ボギー 6:ダボ 7:トリ 8〜10:大叩き 11〜12:爆発
+
             function realisticStroke() {
+
                 const r = Math.random();
+
                 if (r < 0.03) return 3;
+
                 if (r < 0.18) return 4;
+
                 if (r < 0.50) return 5;
+
                 if (r < 0.78) return 6;
+
                 if (r < 0.90) return 7;
+
                 if (r < 0.97) return 8 + Math.floor(Math.random() * 3); // 8〜10
+
                 return 11 + Math.floor(Math.random() * 2);               // 11〜12
+
             }
+
+ 
 
             // パット数: 1パット20%, 2パット65%, 3パット15%
+
             function realisticPutt(stroke) {
+
                 // 大叩き時はパットも多め
+
                 if (stroke >= 9) return 2 + Math.floor(Math.random() * 2); // 2〜3
+
                 const r = Math.random();
+
                 if (r < 0.20) return 1;
+
                 if (r < 0.85) return 2;
+
                 return 3;
+
             }
+
+ 
 
             // 現在のプレイヤー名で scoreData を確実に初期化（キー不一致を防ぐ）
+
             // 既存データは保持しつつ、存在しないプレイヤーキーだけ補完する
+
             if (!scoreData) scoreData = {};
+
             players.forEach(p => {
+
                 if (!scoreData[p]) {
+
                     scoreData[p] = {};
+
                     holes.forEach(h => {
+
                         scoreData[p][`hole_${h}_stroke`] = '';
+
                         scoreData[p][`hole_${h}_putt`]   = '';
+
                     });
+
                 }
+
             });
+
+ 
 
             // 各プレイヤー × 対象ホールにスコアをセット
+
             players.forEach(player => {
+
                 targetHoles.forEach(hole => {
+
                     const s = realisticStroke();
+
                     scoreData[player][`hole_${hole}_stroke`] = s;
+
                     scoreData[player][`hole_${hole}_putt`]   = realisticPutt(s);
+
                 });
+
             });
+
+ 
 
             // SCOREテーブルを再描画（input の value 属性ごと再生成される）
+
             renderScoreTable();
 
+ 
+
             // 念のため、DOM上の各 input にも直接 value をセット
+
             players.forEach(player => {
+
                 targetHoles.forEach(hole => {
+
                     const sVal = scoreData[player][`hole_${hole}_stroke`];
+
                     const pVal = scoreData[player][`hole_${hole}_putt`];
+
                     // oninput で scoreData を更新する input を探して直接上書き
+
                     const inputs = document.querySelectorAll(
+
                         `input[oninput*="updateScore('${player}', ${hole},"]`
+
                     );
+
                     if (inputs[0]) inputs[0].value = sVal;
+
                     if (inputs[1]) inputs[1].value = pVal;
+
                 });
+
             });
+
+ 
 
             // 現在表示中のゲームタブも再計算
+
             if (document.getElementById('olympic').classList.contains('active')) renderOlympicTable();
+
             if (document.getElementById('vegas').classList.contains('active'))   renderVegasTable();
+
             if (document.getElementById('skins').classList.contains('active'))   renderSkinsTable();
 
+ 
+
             const label = range === 'front' ? 'FRONT 9（1〜9番）' : 'BACK 9（10〜18番）';
+
             alert(`${label} のテストデータを入力しました！SCOREタブで各ホールを確認してください。`);
+
         }
+
         // ===== /TEST FUNCTION =====
 
+ 
+
         function initOlympicData() {
+
             const players = getPlayers();
+
             olympicScoreData = {};
+
             players.forEach(player => {
+
                 olympicScoreData[player] = {};
+
                 holes.forEach(hole => {
+
                     olympicScoreData[player][`hole_${hole}`] = '';
+
                 });
+
             });
+
             renderOlympicTable();
+
         }
+
+ 
 
         // Vegas データ初期化（P1のペア相手を保持）
+
         function initVegasData() {
+
             const players = getPlayers();
+
             vegasData = {};
+
             players.forEach(player => {
+
                 vegasData[player] = {};
+
                 holes.forEach(hole => {
+
                     vegasData[player][`hole_${hole}_br`] = false;
+
                 });
+
             });
+
             // ホール毎のP1のペア相手を初期化（デフォルトはP2）
+
             holes.forEach(hole => {
+
                 vegasData[`hole_${hole}_p1_pair`] = '1'; // '1'=P2, '2'=P3, '3'=P4
+
             });
+
         }
+
+ 
 
         // P1のペア相手選択からペアを取得
+
         function getVegasPairs(hole) {
+
             const players = getPlayers();
+
             const p1PairIndex = vegasData[`hole_${hole}_p1_pair`] || '1'; // デフォルト P2
 
+ 
+
             let p1PairPlayer;
+
             if (p1PairIndex === '1') p1PairPlayer = players[1]; // P2
+
             else if (p1PairIndex === '2') p1PairPlayer = players[2]; // P3
+
             else p1PairPlayer = players[3]; // P4
 
+ 
+
             // P1のペア相手が決まったら、残りがペア2になる
+
             const pair1 = [players[0], p1PairPlayer];
+
             const pair2 = players.filter(p => !pair1.includes(p));
 
+ 
+
             return { pair1, pair2 };
+
         }
 
+ 
+
         function renderScoreTable() {
+
             const players = getPlayers();
 
+ 
+
             // scoreData が存在するか確認。存在しなければ初期化（念のため）
+
             if (!scoreData || Object.keys(scoreData).length === 0) {
+
                 initScoreData();
+
                 return;
+
             }
+
+ 
 
             let html = '<thead><tr class="section-header"><th class="player-cell">PLAYER</th>';
 
+ 
+
             frontNine.forEach(h => html += `<th>${h}</th>`);
+
             html += '<th class="section-header">OUT</th>';
 
+ 
+
             backNine.forEach(h => html += `<th>${h}</th>`);
+
             html += '<th class="section-header">IN</th>';
+
             html += '<th class="section-header">TOT</th></tr></thead><tbody>';
 
+ 
+
             players.forEach(player => {
+
                 // プレイヤーデータが存在しない場合（名前変更直後など）は空で補完
+
                 if (!scoreData[player]) {
+
                     scoreData[player] = {};
+
                     holes.forEach(h => {
+
                         scoreData[player][`hole_${h}_stroke`] = '';
+
                         scoreData[player][`hole_${h}_putt`]   = '';
+
                     });
+
                 }
+
                 const outStroke = frontNine.reduce((s, h) => s + (parseInt(scoreData[player][`hole_${h}_stroke`]) || 0), 0);
+
                 const outPutt = frontNine.reduce((s, h) => s + (parseInt(scoreData[player][`hole_${h}_putt`]) || 0), 0);
+
                 const inStroke = backNine.reduce((s, h) => s + (parseInt(scoreData[player][`hole_${h}_stroke`]) || 0), 0);
+
                 const inPutt = backNine.reduce((s, h) => s + (parseInt(scoreData[player][`hole_${h}_putt`]) || 0), 0);
+
                 const total = outStroke + inStroke;
+
+ 
 
                 html += `<tr><td class="player-cell">${player}</td>`;
 
+ 
+
                 frontNine.forEach(h => {
+
                     html += `<td><div style="display: flex; flex-direction: column; gap: 2px;">
+
                         <input type="number" class="score-input" min="1" value="${scoreData[player][`hole_${h}_stroke`]}"
+
                             oninput="updateScore('${player}', ${h}, 'stroke', this.value);" placeholder="S">
+
                         <input type="number" class="score-input" min="0" value="${scoreData[player][`hole_${h}_putt`]}"
+
                             oninput="updateScore('${player}', ${h}, 'putt', this.value);" placeholder="P">
+
                     </div></td>`;
+
                 });
+
                 html += `<td class="total-cell"><div>${outStroke || '-'}</div><div style="font-size: 10px; color: #666;">${outPutt}p</div></td>`;
 
+ 
+
                 backNine.forEach(h => {
+
                     html += `<td><div style="display: flex; flex-direction: column; gap: 2px;">
+
                         <input type="number" class="score-input" min="1" value="${scoreData[player][`hole_${h}_stroke`]}"
+
                             oninput="updateScore('${player}', ${h}, 'stroke', this.value);" placeholder="S">
+
                         <input type="number" class="score-input" min="0" value="${scoreData[player][`hole_${h}_putt`]}"
+
                             oninput="updateScore('${player}', ${h}, 'putt', this.value);" placeholder="P">
+
                     </div></td>`;
+
                 });
+
                 html += `<td class="total-cell"><div>${inStroke || '-'}</div><div style="font-size: 10px; color: #666;">${inPutt}p</div></td>`;
+
                 html += `<td class="total-cell"><div>${total || '-'}</div><div style="font-size: 10px;">${outPutt + inPutt}p</div></td></tr>`;
+
             });
+
+ 
 
             html += '</tbody>';
+
             document.getElementById('scoreTable').innerHTML = html;
+
         }
+
+ 
 
         function updateScore(player, hole, type, value) {
+
             scoreData[player][`hole_${hole}_${type}`] = value;
+
         }
+
+ 
 
         function renderOlympicTable() {
+
             const players = getPlayers();
+
             const roleMap = {
+
                 gold:    { icon: '🥇', label: '金' },
+
                 silver:  { icon: '🥈', label: '銀' },
+
                 bronze:  { icon: '🥉', label: '銅' },
+
                 iron:    { icon: '⚙️', label: '鉄' },
+
                 diamond: { icon: '💎', label: 'ダイ' }
+
             };
+
+ 
 
             // プレイヤーキー補完
+
             players.forEach(player => {
+
                 if (!olympicScoreData[player]) {
+
                     olympicScoreData[player] = {};
+
                     holes.forEach(h => { olympicScoreData[player][`hole_${h}`] = ''; });
+
                 }
+
             });
+
+ 
 
             // ヘッダー: HOLE | A | B | C | D
+
             let html = '<thead><tr class="section-header"><th>HOLE</th>';
+
             players.forEach(p => html += `<th>${p}</th>`);
+
             html += '</tr></thead><tbody>';
 
+ 
+
             // ホール行を描画するヘルパー
+
             const renderHole = h => {
+
                 html += `<tr><td class="player-cell" style="font-weight:900; text-align:center;">${h}</td>`;
+
                 players.forEach(p => {
+
                     const role = olympicScoreData[p][`hole_${h}`] || '';
+
                     const icon = role ? roleMap[role].icon : '';
+
                     // セル背景: 選択済みは薄い色
+
                     const bg = role ? '#e8e8e8' : 'white';
+
                     html += `<td style="text-align:center; padding:3px; background:${bg};">
+
                         <select class="select-role"
+
                             style="width:100%; font-size:14px; text-align:center;"
+
                             onchange="olympicScoreData['${p}']['hole_${h}'] = this.value; renderOlympicTable(); calculateOlympic();">
+
                             <option value="">－</option>
+
                             <option value="gold"    ${role === 'gold'    ? 'selected' : ''}>🥇 金</option>
+
                             <option value="silver"  ${role === 'silver'  ? 'selected' : ''}>🥈 銀</option>
+
                             <option value="bronze"  ${role === 'bronze'  ? 'selected' : ''}>🥉 銅</option>
+
                             <option value="iron"    ${role === 'iron'    ? 'selected' : ''}>⚙️ 鉄</option>
+
                             <option value="diamond" ${role === 'diamond' ? 'selected' : ''}>💎 ダイ</option>
+
                         </select>
+
                     </td>`;
+
                 });
+
                 html += '</tr>';
+
             };
+
+ 
 
             // 小計行（OUT / IN）を描画するヘルパー
+
             const renderSubtotal = (label, holeSet) => {
+
                 html += `<tr style="background:#ddd; font-weight:900; border:4px solid black;">
+
                     <td class="player-cell" style="text-align:center;">${label}</td>`;
+
                 players.forEach(p => {
+
                     const icons = holeSet
+
                         .filter(h => olympicScoreData[p][`hole_${h}`])
+
                         .map(h => roleMap[olympicScoreData[p][`hole_${h}`]].icon)
+
                         .join('');
+
                     const prize = holeSet.reduce((s, h) => s + (olympicRoles[olympicScoreData[p][`hole_${h}`]] || 0), 0);
+
                     html += `<td style="text-align:center; font-size:12px; line-height:1.6;">
+
                         ${icons || '－'}
+
                         ${prize > 0 ? `<br><span style="font-size:11px;">¥${prize.toLocaleString()}</span>` : ''}
+
                     </td>`;
+
                 });
+
                 html += '</tr>';
+
             };
 
+ 
+
             // Front 9
+
             frontNine.forEach(h => renderHole(h));
+
             renderSubtotal('OUT', frontNine);
 
+ 
+
             // Back 9
+
             backNine.forEach(h => renderHole(h));
+
             renderSubtotal('IN', backNine);
 
+ 
+
             // TOTAL行
+
             html += `<tr style="background:#000; color:white; font-weight:900; border:8px solid black;">
+
                 <td class="player-cell" style="text-align:center; color:white;">TOTAL</td>`;
+
             players.forEach(p => {
+
                 const icons = holes
+
                     .filter(h => olympicScoreData[p][`hole_${h}`])
+
                     .map(h => roleMap[olympicScoreData[p][`hole_${h}`]].icon)
+
                     .join('');
+
                 const prize = holes.reduce((s, h) => s + (olympicRoles[olympicScoreData[p][`hole_${h}`]] || 0), 0);
+
                 html += `<td style="text-align:center; font-size:13px; line-height:1.8; color:white;">
+
                     ${icons || '－'}
+
                     ${prize > 0 ? `<br><span style="font-size:14px;">¥${prize.toLocaleString()}</span>` : ''}
+
                 </td>`;
+
             });
+
             html += '</tr></tbody>';
+
             document.getElementById('olympicTable').innerHTML = html;
+
         }
 
+ 
+
         // Vegas テーブルレンダリング（各プレイヤーの個別スコア表示）
+
         function renderVegasTable() {
+
             const players = getPlayers();
+
             const hasStopper = document.getElementById('vegasStopper').checked;
+
             const stopperDisplay = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
+
+ 
 
             let html = '<thead><tr class="section-header"><th>Hole</th><th>P1 Pair</th><th>P1(' + players[0] + ')</th><th>P2(' + players[1] + ')</th><th>P3(' + players[2] + ')</th><th>P4(' + players[3] + ')</th><th>BR(Pair1)</th><th>BR(Pair2)</th><th>Diff</th></tr></thead><tbody>';
 
+ 
+
             let frontTotals = { pair1: 0, pair2: 0 };
+
             let backTotals = { pair1: 0, pair2: 0 };
 
+ 
+
             let frontPlayerTotals = {};
+
             let backPlayerTotals = {};
+
             players.forEach(p => {
+
                 frontPlayerTotals[p] = 0;
+
                 backPlayerTotals[p] = 0;
+
             });
 
+ 
+
             const renderHolesGroup = (holeArray, totalsTracker, playerTotalsTracker) => {
+
                 holeArray.forEach(h => {
+
                     const pairs = getVegasPairs(h);
+
                     const pair1 = pairs.pair1;
+
                     const pair2 = pairs.pair2;
 
+ 
+
                     const scores = [];
+
                     players.forEach(p => {
+
                         scores[p] = getHoleScore(p, h, hasStopper, stopperDisplay);
+
                     });
+
+ 
 
                     const p1a_score = scores[pair1[0]];
+
                     const p1b_score = scores[pair1[1]];
+
                     const p2a_score = scores[pair2[0]];
+
                     const p2b_score = scores[pair2[1]];
 
+ 
+
                     let pair1_score = formatTwoDigit(p1a_score, p1b_score);
+
                     let pair2_score = formatTwoDigit(p2a_score, p2b_score);
 
+ 
+
                     const isBR1 = vegasData[pair1[0]]?.[`hole_${h}_br`] || vegasData[pair1[1]]?.[`hole_${h}_br`];
+
                     const isBR2 = vegasData[pair2[0]]?.[`hole_${h}_br`] || vegasData[pair2[1]]?.[`hole_${h}_br`];
 
+ 
+
                     if (isBR1) pair1_score = reverseTwoDigit(pair1_score);
+
                     if (isBR2) pair2_score = reverseTwoDigit(pair2_score);
 
+ 
+
                     totalsTracker.pair1 += parseInt(pair1_score);
+
                     totalsTracker.pair2 += parseInt(pair2_score);
 
+ 
+
                     // 各プレイヤーのスコアを合計に加算
+
                     players.forEach(p => {
+
                         const playerScore = pair1.includes(p) ? parseInt(pair1_score) : parseInt(pair2_score);
+
                         playerTotalsTracker[p] += playerScore;
+
                     });
+
+ 
 
                     const diff = parseInt(pair1_score) - parseInt(pair2_score);
 
+ 
+
                     const p1PairIndex = vegasData[`hole_${h}_p1_pair`] || '1';
+
                     const pairOptions = [
+
                         { value: '1', label: 'P1-P2' },
+
                         { value: '2', label: 'P1-P3' },
+
                         { value: '3', label: 'P1-P4' }
+
                     ];
 
+ 
+
                     let pairSelectHtml = `<select class="pair-select-cell" onchange="vegasData['hole_${h}_p1_pair'] = this.value; renderVegasTable(); calculateVegas();">`;
+
                     pairOptions.forEach(opt => {
+
                         pairSelectHtml += `<option value="${opt.value}" ${p1PairIndex === opt.value ? 'selected' : ''}>${opt.label}</option>`;
+
                     });
+
                     pairSelectHtml += '</select>';
 
+ 
+
                     html += `<tr>
+
                         <td class="player-cell">${h}</td>
+
                         <td class="pair-select-cell">${pairSelectHtml}</td>
+
                         <td class="vegas-score">${pair1.includes(players[0]) ? pair1_score : pair2_score}</td>
+
                         <td class="vegas-score">${pair1.includes(players[1]) ? pair1_score : pair2_score}</td>
+
                         <td class="vegas-score">${pair1.includes(players[2]) ? pair1_score : pair2_score}</td>
+
                         <td class="vegas-score">${pair1.includes(players[3]) ? pair1_score : pair2_score}</td>
+
                         <td class="checkbox-cell"><input type="checkbox" ${isBR1 ? 'checked' : ''} onchange="updateVegasBR('${pair1[0]}', '${pair1[1]}', ${h}, this.checked); renderVegasTable(); calculateVegas();"></td>
+
                         <td class="checkbox-cell"><input type="checkbox" ${isBR2 ? 'checked' : ''} onchange="updateVegasBR('${pair2[0]}', '${pair2[1]}', ${h}, this.checked); renderVegasTable(); calculateVegas();"></td>
+
                         <td class="total-cell">${diff > 0 ? '+' : ''}${diff}</td>
+
                     </tr>`;
+
                 });
+
             };
 
+ 
+
             // Front 9
+
             renderHolesGroup(frontNine, frontTotals, frontPlayerTotals);
+
             html += `<tr style="background-color: #ddd; font-weight: 900; border: 4px solid black;">
+
                 <td class="player-cell" style="border-right: 4px solid black;">Front 9</td>
+
                 <td style="border-right: 4px solid black; text-align: center; font-size: 12px; color: #666;">MY SCORE</td>
+
                 <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${frontPlayerTotals[players[0]]}</td>
+
                 <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${frontPlayerTotals[players[1]]}</td>
+
                 <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${frontPlayerTotals[players[2]]}</td>
+
                 <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${frontPlayerTotals[players[3]]}</td>
+
                 <td colspan="3" style="text-align: center;"></td>
+
             </tr>`;
+
+ 
 
             // Back 9
+
             renderHolesGroup(backNine, backTotals, backPlayerTotals);
+
             html += `<tr style="background-color: #ddd; font-weight: 900; border: 4px solid black;">
+
                 <td class="player-cell" style="border-right: 4px solid black;">Back 9</td>
+
                 <td style="border-right: 4px solid black; text-align: center; font-size: 12px; color: #666;">MY SCORE</td>
+
                 <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${backPlayerTotals[players[0]]}</td>
+
                 <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${backPlayerTotals[players[1]]}</td>
+
                 <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${backPlayerTotals[players[2]]}</td>
+
                 <td class="vegas-score" style="text-align: center; font-size: 18px; font-weight: 900;">${backPlayerTotals[players[3]]}</td>
+
                 <td colspan="3" style="text-align: center;"></td>
+
             </tr>`;
+
+ 
 
             // Total
+
             const totalPair1 = frontTotals.pair1 + backTotals.pair1;
+
             const totalPair2 = frontTotals.pair2 + backTotals.pair2;
+
             html += `<tr style="background-color: #000; color: white; font-weight: 900; border: 8px solid black;">
+
                 <td class="player-cell" style="border-right: 4px solid white;">TOTAL</td>
+
                 <td style="border-right: 4px solid white; text-align: center; font-size: 12px;">MY SCORE</td>
+
                 <td style="text-align: center; font-size: 22px; font-weight: 900; padding: 15px;">${frontPlayerTotals[players[0]] + backPlayerTotals[players[0]]}</td>
+
                 <td style="text-align: center; font-size: 22px; font-weight: 900; padding: 15px;">${frontPlayerTotals[players[1]] + backPlayerTotals[players[1]]}</td>
+
                 <td style="text-align: center; font-size: 22px; font-weight: 900; padding: 15px;">${frontPlayerTotals[players[2]] + backPlayerTotals[players[2]]}</td>
+
                 <td style="text-align: center; font-size: 22px; font-weight: 900; padding: 15px;">${frontPlayerTotals[players[3]] + backPlayerTotals[players[3]]}</td>
+
                 <td colspan="3" style="text-align: center;"></td>
+
             </tr>`;
 
+ 
+
             html += '</tbody>';
+
             document.getElementById('vegasTable').innerHTML = html;
 
+ 
+
             document.getElementById('stopperDisplayRow').style.display = hasStopper ? 'grid' : 'none';
+
         }
+
+ 
 
         function getHoleScore(player, hole, hasStopper, stopperDisplay) {
+
             const stroke = parseInt(scoreData[player]?.[`hole_${hole}_stroke`]) || 0;
+
             const putt = parseInt(scoreData[player]?.[`hole_${hole}_putt`]) || 0;
+
             let score = stroke + putt;
 
+ 
+
             if (hasStopper && score >= 10) {
+
                 score = parseInt(stopperDisplay);
+
             }
+
             return score;
+
         }
+
+ 
 
         function formatTwoDigit(a, b) {
+
             const min = Math.min(a, b);
+
             const max = Math.max(a, b);
+
             // minが0の場合は0を1の位にする（ストッパー値は1の位に来るべき）
+
             if (min === 0) {
+
                 return max + '0';
+
             }
+
             return '' + min + max;
+
         }
+
+ 
 
         function reverseTwoDigit(score) {
+
             const str = score.toString().padStart(2, '0');
+
             return str.charAt(1) + str.charAt(0);
+
         }
+
+ 
 
         function updateVegasBR(p1, p2, hole, checked) {
+
             if (!vegasData[p1]) vegasData[p1] = {};
+
             if (!vegasData[p2]) vegasData[p2] = {};
+
             vegasData[p1][`hole_${hole}_br`] = checked;
+
             vegasData[p2][`hole_${hole}_br`] = checked;
+
         }
+
+ 
 
         function calculateVegas() {
+
             const players = getPlayers();
+
             const hasStopper = document.getElementById('vegasStopper').checked;
+
             const stopperDisplay = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
+
             const pointValue = parseInt(document.getElementById('vegasPointValue').value) || 1000;
 
+ 
+
             // 各プレイヤーの18ホール合計スコアを計算
+
             let playerTotals = {};
+
             players.forEach(p => {
+
                 playerTotals[p] = 0;
+
             });
 
+ 
+
             holes.forEach(h => {
+
                 const pairs = getVegasPairs(h);
+
                 const pair1 = pairs.pair1;
+
                 const pair2 = pairs.pair2;
 
+ 
+
                 const p1a_score = getHoleScore(pair1[0], h, hasStopper, stopperDisplay);
+
                 const p1b_score = getHoleScore(pair1[1], h, hasStopper, stopperDisplay);
+
                 const p2a_score = getHoleScore(pair2[0], h, hasStopper, stopperDisplay);
+
                 const p2b_score = getHoleScore(pair2[1], h, hasStopper, stopperDisplay);
 
+ 
+
                 let pair1_score = parseInt(formatTwoDigit(p1a_score, p1b_score));
+
                 let pair2_score = parseInt(formatTwoDigit(p2a_score, p2b_score));
 
+ 
+
                 const isBR1 = vegasData[pair1[0]]?.[`hole_${h}_br`] || vegasData[pair1[1]]?.[`hole_${h}_br`];
+
                 const isBR2 = vegasData[pair2[0]]?.[`hole_${h}_br`] || vegasData[pair2[1]]?.[`hole_${h}_br`];
 
+ 
+
                 if (isBR1) pair1_score = parseInt(reverseTwoDigit(pair1_score.toString().padStart(2, '0')));
+
                 if (isBR2) pair2_score = parseInt(reverseTwoDigit(pair2_score.toString().padStart(2, '0')));
 
+ 
+
                 // 各プレイヤーの合計に加算
+
                 playerTotals[pair1[0]] += pair1_score;
+
                 playerTotals[pair1[1]] += pair1_score;
+
                 playerTotals[pair2[0]] += pair2_score;
+
                 playerTotals[pair2[1]] += pair2_score;
+
             });
+
+ 
 
             // 合計スコア計算
+
             const totalScore = Object.values(playerTotals).reduce((a, b) => a + b, 0);
+
             const averageScore = totalScore / players.length;
 
+ 
+
             // 各プレイヤーのスコアと決済額を表示
+
             let scoreHtml = '';
+
             players.forEach(player => {
+
                 const playerScore = playerTotals[player];
+
                 const deviation = averageScore - playerScore;
+
                 const settlementAmount = deviation * pointValue;
 
+ 
+
                 scoreHtml += `<div class="earnings-card">
+
                     <div class="earnings-card-name">${player}</div>
+
                     <div style="font-size: 12px; margin-bottom: 5px;">スコア: ${playerScore}</div>
+
                     <div class="earnings-card-amount">${settlementAmount > 0 ? '+' : ''}¥${Math.round(settlementAmount)}</div>
+
                 </div>`;
+
             });
+
             document.getElementById('vegasScoreDiv').innerHTML = scoreHtml;
 
+ 
+
             // 決済情報
+
             let settlementHtml = `<div style="font-size: 14px; font-weight: 900; margin-bottom: 15px; border-bottom: 2px solid black; padding-bottom: 10px;">平均スコア: ${averageScore.toFixed(1)}点 | 合計スコア: ${totalScore}点</div>`;
 
+ 
+
             // 支払額と受取額をマッピング
+
             const settlements = players.map(p => ({
+
                 player: p,
+
                 amount: (averageScore - playerTotals[p]) * pointValue
+
             })).sort((a, b) => b.amount - a.amount);
 
+ 
+
             settlements.forEach(s => {
+
                 if (s.amount !== 0) {
+
                     const status = s.amount > 0 ? '受取' : '支払';
+
                     settlementHtml += `<div class="settlement-item">
+
                         <div>${s.player} (${status})</div>
+
                         <div>¥${Math.abs(Math.round(s.amount))}</div>
+
                     </div>`;
+
                 }
+
             });
+
+ 
 
             if (settlements.every(s => s.amount === 0)) {
+
                 settlementHtml = '<div class="no-payment">NO PAYMENT</div>';
+
             }
+
+ 
 
             document.getElementById('vegasSettlementDiv').innerHTML = settlementHtml;
+
         }
+
+ 
 
         // SKINS 関数
+
         function initSkinsData() {
+
             skinsData = {};
+
             skinsData.carryover = 0;  // キャリーオーバー用（持ち越し賞金）
+
             holes.forEach(hole => {
+
                 skinsData[`hole_${hole}_prize`] = 1000;
+
                 skinsData[`hole_${hole}_winner`] = '';
+
             });
+
             renderSkinsPrizeGrid();
+
             renderSkinsTable();
+
         }
+
+ 
 
         function renderSkinsPrizeGrid() {
+
             let html = '';
 
+ 
+
             if (skinsPrizeMode === 'perHole') {
+
                 // ホール別設定モード
+
                 holes.forEach(h => {
+
                     const prize = skinsData[`hole_${h}_prize`] || 1000;
+
                     html += `<div style="border: 4px solid black; padding: 10px; text-align: center;">
+
                         <div style="font-weight: 900; margin-bottom: 5px;">Hole ${h}</div>
+
                         <input type="number" value="${prize}" min="0"
+
                             onchange="skinsData['hole_${h}_prize'] = parseInt(this.value) || 1000; renderSkinsTable(); calculateSkins();"
+
                             style="width: 80px; padding: 5px; text-align: center; font-weight: 900; border: 2px solid black;">
+
                     </div>`;
+
                 });
+
             } else {
+
                 // 一律設定モード
+
                 html = `<div style="border: 4px solid black; padding: 15px; text-align: center;">
+
                     <div style="font-weight: 900; margin-bottom: 10px; font-size: 16px;">全ホール共通賞金</div>
+
                     <input type="number" value="${skinsUniformPrize}" min="0"
+
                         onchange="skinsUniformPrize = parseInt(this.value) || 1000; holes.forEach(h => { skinsData['hole_' + h + '_prize'] = skinsUniformPrize; }); renderSkinsTable(); calculateSkins();"
+
                         style="width: 120px; padding: 10px; text-align: center; font-weight: 900; border: 4px solid black; font-size: 16px;">
+
                     <div style="margin-top: 10px; color: #666; font-size: 12px;">¥/ホール</div>
+
                 </div>`;
+
             }
 
+ 
+
             document.getElementById('skinsPrizeGrid').innerHTML = html;
+
         }
 
+ 
+
         function renderSkinsTable() {
+
             const players = getPlayers();
+
             const hasStopper = document.getElementById('vegasStopper').checked;
+
             const stopperDisplay = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
 
+ 
+
             let html = '<thead><tr class="section-header"><th>Hole</th><th>Prize</th>';
+
             players.forEach(p => html += `<th>${p}</th>`);
+
             html += '</tr></thead><tbody>';
 
+ 
+
             // Front 9/Back 9 の小計用（表示のみ）
+
             let frontEarnings = {};
+
             let backEarnings = {};
+
             players.forEach(p => { frontEarnings[p] = 0; backEarnings[p] = 0; });
 
+ 
+
             // キャリーオーバーは18ホール通し（9番タイ→10番に持ち越し）
+
             let currentCarryover = 0;
 
+ 
+
             holes.forEach(h => {
+
                 const basePrize = skinsData[`hole_${h}_prize`] || 1000;
+
                 const incomingCarryover = currentCarryover;
+
                 const totalPrize = basePrize + incomingCarryover;
 
+ 
+
                 // 各プレイヤーのスコアを取得して最低スコアを判定
+
                 let scores = {};
+
                 let minScore = Infinity;
+
                 players.forEach(p => {
+
                     const score = getHoleScore(p, h, hasStopper, stopperDisplay);
+
                     scores[p] = score;
+
                     minScore = Math.min(minScore, score);
+
                 });
+
+ 
 
                 // 単独最低スコアの場合のみ勝者（タイは持ち越し）
+
                 let autoWinner = '';
+
                 let minScoreCount = 0;
+
                 let bestScorePlayer = '';
+
                 for (let p of players) {
+
                     if (scores[p] === minScore) {
+
                         minScoreCount++;
+
                         if (minScoreCount === 1) bestScorePlayer = p;
+
                     }
+
                 }
+
                 if (minScoreCount === 1) autoWinner = bestScorePlayer;
 
+ 
+
                 // 自動判定を優先、手動選択があればそれを使用
+
                 const winner = skinsData[`hole_${h}_winner`] || autoWinner;
+
                 if (autoWinner && !skinsData[`hole_${h}_winner`]) {
+
                     skinsData[`hole_${h}_winner`] = autoWinner;
+
                 }
+
+ 
 
                 if (winner) {
+
                     // 勝者が決まった：Front/Back の小計に加算してキャリーオーバーリセット
+
                     if (frontNine.includes(h)) frontEarnings[winner] += totalPrize;
+
                     else backEarnings[winner] += totalPrize;
+
                     currentCarryover = 0;
+
                 } else {
+
                     // タイ：持ち越し（9番タイでも10番に引き継がれる）
+
                     currentCarryover += basePrize;
+
                 }
 
+ 
+
                 // 表示：持ち越しがある場合は「¥基本 + ¥持越」と表示
+
                 const displayPrize = incomingCarryover > 0
+
                     ? `¥${basePrize.toLocaleString()} + ¥${incomingCarryover.toLocaleString()}`
+
                     : `¥${basePrize.toLocaleString()}`;
 
+ 
+
                 html += `<tr>
+
                     <td class="player-cell">${h}</td>
+
                     <td class="total-cell">${displayPrize}</td>`;
 
+ 
+
                 players.forEach(p => {
+
                     const isChecked = winner === p ? 'checked' : '';
+
                     html += `<td class="checkbox-cell" style="text-align: center;">
+
                         <input type="radio" name="hole_${h}_winner" value="${p}" ${isChecked}
+
                             onchange="skinsData['hole_${h}_winner'] = '${p}'; renderSkinsTable(); calculateSkins();">
+
                     </td>`;
+
                 });
+
+ 
 
                 html += `</tr>`;
 
+ 
+
                 // Front 9 小計行（9番の後）
+
                 if (h === 9) {
+
                     html += `<tr style="background-color: #f0f0f0; font-weight: 900;">
+
                         <td class="player-cell">Front 9</td>
+
                         <td class="total-cell">${currentCarryover > 0 ? `持越 ¥${currentCarryover.toLocaleString()}` : '-'}</td>`;
+
                     players.forEach(p => {
+
                         html += `<td style="text-align: center;">¥${frontEarnings[p].toLocaleString()}</td>`;
+
                     });
+
                     html += `</tr>`;
+
                 }
+
             });
+
+ 
 
             // Back 9 小計行
+
             html += `<tr style="background-color: #f0f0f0; font-weight: 900;">
+
                 <td class="player-cell">Back 9</td>
+
                 <td class="total-cell">-</td>`;
+
             players.forEach(p => {
+
                 html += `<td style="text-align: center;">¥${backEarnings[p].toLocaleString()}</td>`;
+
             });
+
             html += `</tr>`;
+
+ 
 
             // TOTAL行
+
             html += `<tr style="background-color: #000; color: white; font-weight: 900;">
+
                 <td class="player-cell">TOTAL</td>
+
                 <td class="total-cell">-</td>`;
+
             players.forEach(p => {
+
                 const total = frontEarnings[p] + backEarnings[p];
+
                 html += `<td style="text-align: center;">¥${total.toLocaleString()}</td>`;
+
             });
+
             html += `</tr>`;
 
+ 
+
             html += '</tbody>';
+
             document.getElementById('skinsTable').innerHTML = html;
+
         }
+
+ 
 
         function calculateSkins() {
+
             const players = getPlayers();
+
             const hasStopper = document.getElementById('vegasStopper').checked;
+
             const stopperDisplay = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
 
+ 
+
             const earnings = {};
+
             players.forEach(p => earnings[p] = 0);
 
+ 
+
             // 18ホール通しでキャリーオーバーを計算（9番→10番も持ち越し）
+
             let currentCarryover = 0;
+
             holes.forEach(h => {
+
                 const basePrize = skinsData[`hole_${h}_prize`] || 1000;
+
                 const totalPrize = basePrize + currentCarryover;
 
+ 
+
                 let scores = {};
+
                 let minScore = Infinity;
+
                 players.forEach(p => {
+
                     const score = getHoleScore(p, h, hasStopper, stopperDisplay);
+
                     scores[p] = score;
+
                     minScore = Math.min(minScore, score);
+
                 });
+
+ 
 
                 let autoWinner = '';
+
                 let minScoreCount = 0;
+
                 let bestScorePlayer = '';
+
                 for (let p of players) {
+
                     if (scores[p] === minScore) {
+
                         minScoreCount++;
+
                         if (minScoreCount === 1) bestScorePlayer = p;
+
                     }
+
                 }
+
                 if (minScoreCount === 1) autoWinner = bestScorePlayer;
 
+ 
+
                 const winner = skinsData[`hole_${h}_winner`] || autoWinner;
+
                 if (winner) {
+
                     earnings[winner] += totalPrize;
+
                     currentCarryover = 0;
+
                 } else {
+
                     currentCarryover += basePrize;
+
                 }
+
             });
+
+ 
 
             // EARNINGS 表示
+
             let earningsHtml = '';
+
             players.forEach(player => {
+
                 earningsHtml += `<div class="earnings-card">
+
                     <div class="earnings-card-name">${player}</div>
+
                     <div class="earnings-card-amount">¥${earnings[player].toLocaleString()}</div>
+
                 </div>`;
+
             });
+
             document.getElementById('skinsEarningsDiv').innerHTML = earningsHtml;
 
+ 
+
             // SETTLEMENT 計算（獲得金の多い人が少ない人から受け取る形式）
+
             // 全員の平均獲得金を基準に精算
+
             const totalEarnings = Object.values(earnings).reduce((a, b) => a + b, 0);
+
             const average = totalEarnings / players.length;
+
             const balances = {};
+
             players.forEach(p => balances[p] = earnings[p] - average);
 
+ 
+
             const payers = players.filter(p => balances[p] < 0).sort((a, b) => balances[a] - balances[b]);
+
             const receivers = players.filter(p => balances[p] > 0).sort((a, b) => balances[b] - balances[a]);
 
+ 
+
             const settlement = [];
+
             const balancesCopy = { ...balances };
+
             payers.forEach(payer => {
+
                 let remaining = Math.abs(balancesCopy[payer]);
+
                 receivers.forEach(receiver => {
+
                     if (remaining <= 0.01 || balancesCopy[receiver] <= 0.01) return;
+
                     const amount = Math.min(remaining, balancesCopy[receiver]);
+
                     settlement.push({ from: payer, to: receiver, amount: Math.round(amount) });
+
                     balancesCopy[receiver] -= amount;
+
                     remaining -= amount;
+
                 });
+
             });
 
+ 
+
             let settlementHtml = '';
+
             if (settlement.length > 0) {
+
                 settlement.forEach(item => {
+
                     settlementHtml += `<div class="settlement-item">
+
                         <div>${item.from} → ${item.to}</div>
+
                         <div>¥${item.amount.toLocaleString()}</div>
+
                     </div>`;
+
                 });
+
             } else if (totalEarnings === 0) {
+
                 settlementHtml = '<div class="no-payment">スコア未入力</div>';
+
             } else {
+
                 settlementHtml = '<div class="no-payment">NO PAYMENT</div>';
+
             }
+
             document.getElementById('skinsSettlementDiv').innerHTML = settlementHtml;
+
         }
+
+ 
 
         // ===================== TITLE（ニアピン・ドラコン）=====================
 
+ 
+
         // 上部の賞金設定ボックスを描画（OLYMPICのrole-boxと同スタイル）
+
         function renderTitleSettings() {
+
             const items = [
+
                 { key: 'nearpin', label: 'ニアピン', icon: '📍' },
+
                 { key: 'drakon',  label: 'ドラコン',  icon: '💪' }
+
             ];
+
             let html = '';
+
             items.forEach(item => {
+
                 html += `<div class="role-box">
+
                     <div>${item.icon} ${item.label}</div>
+
                     <input type="number" value="${titlePrizes[item.key]}"
+
                         onchange="titlePrizes['${item.key}'] = parseInt(this.value) || 0; calculateTitle();">
+
                 </div>`;
+
             });
+
             document.getElementById('titleSettings').innerHTML = html;
+
         }
+
+ 
 
         // ホール（行）×プレイヤー（列）の表を描画
+
         // 各セルはドロップダウン: '' / 'nearpin' / 'drakon'
+
         function renderTitleTable() {
+
             const players = getPlayers();
+
+ 
 
             // titleData 補完: titleData[hole_h_player] = '' | 'nearpin' | 'drakon'
+
             holes.forEach(h => {
+
                 players.forEach(p => {
+
                     const key = `h${h}_${p}`;
+
                     if (titleData[key] === undefined) titleData[key] = '';
+
                 });
+
             });
+
+ 
 
             // ヘッダー: HOLE | A | B | C | D
+
             let html = '<thead><tr class="section-header"><th>HOLE</th>';
+
             players.forEach(p => html += `<th>${p}</th>`);
+
             html += '</tr></thead><tbody>';
 
+ 
+
             // Front 9
+
             frontNine.forEach(h => {
+
                 html += `<tr><td class="player-cell" style="font-weight:900; text-align:center;">${h}</td>`;
+
                 players.forEach(p => {
+
                     const val = titleData[`h${h}_${p}`] || '';
+
                     html += `<td style="text-align:center; padding:4px;">
+
                         <select class="select-role"
+
                             onchange="titleData['h${h}_${p}'] = this.value; renderTitleTable(); calculateTitle();"
+
                             style="width:100%; font-size:13px;">
+
                             <option value="">－</option>
+
                             <option value="nearpin" ${val === 'nearpin' ? 'selected' : ''}>📍 ニアピン</option>
+
                             <option value="drakon"  ${val === 'drakon'  ? 'selected' : ''}>💪 ドラコン</option>
+
                         </select>
+
                     </td>`;
+
                 });
+
                 html += '</tr>';
+
             });
+
+ 
 
             // Front 9 小計行（ハーフ合計）
+
             html += `<tr style="background:#ddd; font-weight:900; border:4px solid black;">
+
                 <td class="player-cell" style="text-align:center;">OUT</td>`;
+
             players.forEach(p => {
+
                 const npOut = frontNine.filter(h => titleData[`h${h}_${p}`] === 'nearpin').length;
+
                 const dkOut = frontNine.filter(h => titleData[`h${h}_${p}`] === 'drakon').length;
+
                 const prizeOut = npOut * titlePrizes.nearpin + dkOut * titlePrizes.drakon;
+
                 html += `<td style="text-align:center; font-size:11px; line-height:1.8;">
+
                     ${npOut ? `📍×${npOut}` : ''}${npOut && dkOut ? ' ' : ''}${dkOut ? `💪×${dkOut}` : ''}
+
                     ${prizeOut > 0 ? `<br><span style="font-size:12px; font-weight:900;">¥${prizeOut.toLocaleString()}</span>` : ''}
+
                     ${!npOut && !dkOut ? '－' : ''}
+
                 </td>`;
+
             });
+
             html += '</tr>';
+
+ 
 
             // Back 9
+
             backNine.forEach(h => {
+
                 html += `<tr><td class="player-cell" style="font-weight:900; text-align:center;">${h}</td>`;
+
                 players.forEach(p => {
+
                     const val = titleData[`h${h}_${p}`] || '';
+
                     html += `<td style="text-align:center; padding:4px;">
+
                         <select class="select-role"
+
                             onchange="titleData['h${h}_${p}'] = this.value; renderTitleTable(); calculateTitle();"
+
                             style="width:100%; font-size:13px;">
+
                             <option value="">－</option>
+
                             <option value="nearpin" ${val === 'nearpin' ? 'selected' : ''}>📍 ニアピン</option>
+
                             <option value="drakon"  ${val === 'drakon'  ? 'selected' : ''}>💪 ドラコン</option>
+
                         </select>
+
                     </td>`;
+
                 });
+
                 html += '</tr>';
+
             });
+
+ 
 
             // Back 9 小計行（ハーフ合計）
+
             html += `<tr style="background:#ddd; font-weight:900; border:4px solid black;">
+
                 <td class="player-cell" style="text-align:center;">IN</td>`;
+
             players.forEach(p => {
+
                 const npIn = backNine.filter(h => titleData[`h${h}_${p}`] === 'nearpin').length;
+
                 const dkIn = backNine.filter(h => titleData[`h${h}_${p}`] === 'drakon').length;
+
                 const prizeIn = npIn * titlePrizes.nearpin + dkIn * titlePrizes.drakon;
+
                 html += `<td style="text-align:center; font-size:11px; line-height:1.8;">
+
                     ${npIn ? `📍×${npIn}` : ''}${npIn && dkIn ? ' ' : ''}${dkIn ? `💪×${dkIn}` : ''}
+
                     ${prizeIn > 0 ? `<br><span style="font-size:12px; font-weight:900;">¥${prizeIn.toLocaleString()}</span>` : ''}
+
                     ${!npIn && !dkIn ? '－' : ''}
+
                 </td>`;
+
             });
+
             html += '</tr>';
+
+ 
 
             html += `<tr style="background:#000; color:white; font-weight:900; border:8px solid black;">
+
                 <td class="player-cell" style="text-align:center; color:white;">TOTAL</td>`;
+
             players.forEach(p => {
+
                 const npTot = holes.filter(h => titleData[`h${h}_${p}`] === 'nearpin').length;
+
                 const dkTot = holes.filter(h => titleData[`h${h}_${p}`] === 'drakon').length;
+
                 const prize = npTot * titlePrizes.nearpin + dkTot * titlePrizes.drakon;
+
                 html += `<td style="text-align:center; font-size:12px; line-height:1.8; color:white;">
+
                     ${npTot ? `📍×${npTot}` : ''}${npTot && dkTot ? '<br>' : ''}${dkTot ? `💪×${dkTot}` : ''}
+
                     ${prize > 0 ? `<br><span style="font-size:14px;">¥${prize.toLocaleString()}</span>` : ''}
+
                     ${!npTot && !dkTot ? '－' : ''}
+
                 </td>`;
+
             });
+
             html += '</tr>';
 
+ 
+
             html += '</tbody>';
+
             document.getElementById('titleTable').innerHTML = html;
+
         }
+
+ 
 
         // EARNINGS と SETTLEMENT を計算・描画
+
         function calculateTitle() {
+
             const players = getPlayers();
 
+ 
+
             const earnings = {};
+
             players.forEach(p => earnings[p] = 0);
+
             players.forEach(p => {
+
                 holes.forEach(h => {
+
                     const val = titleData[`h${h}_${p}`];
+
                     if (val === 'nearpin') earnings[p] += titlePrizes.nearpin;
+
                     if (val === 'drakon')  earnings[p] += titlePrizes.drakon;
+
                 });
+
             });
+
+ 
 
             // EARNINGS
+
             let earningsHtml = '';
+
             players.forEach(p => {
+
                 earningsHtml += `<div class="earnings-card">
+
                     <div class="earnings-card-name">${p}</div>
+
                     <div class="earnings-card-amount">¥${earnings[p].toLocaleString()}</div>
+
                 </div>`;
+
             });
+
             document.getElementById('titleEarningsDiv').innerHTML = earningsHtml;
 
+ 
+
             // SETTLEMENT（平均との差額方式）
+
             const totalEarnings = Object.values(earnings).reduce((a, b) => a + b, 0);
+
             const average = totalEarnings / players.length;
+
             const balances = {};
+
             players.forEach(p => balances[p] = earnings[p] - average);
 
+ 
+
             const payers    = players.filter(p => balances[p] < -0.01).sort((a, b) => balances[a] - balances[b]);
+
             const receivers = players.filter(p => balances[p] >  0.01).sort((a, b) => balances[b] - balances[a]);
+
             const settlement = [];
+
             const bc = { ...balances };
+
             payers.forEach(payer => {
+
                 let rem = Math.abs(bc[payer]);
+
                 receivers.forEach(receiver => {
+
                     if (rem <= 0.01 || bc[receiver] <= 0.01) return;
+
                     const amt = Math.min(rem, bc[receiver]);
+
                     settlement.push({ from: payer, to: receiver, amount: Math.round(amt) });
+
                     bc[receiver] -= amt;
+
                     rem -= amt;
+
                 });
+
             });
 
+ 
+
             let settlementHtml = '';
+
             if (settlement.length > 0) {
+
                 settlement.forEach(item => {
+
                     settlementHtml += `<div class="settlement-item">
+
                         <div>${item.from} → ${item.to}</div>
+
                         <div>¥${item.amount.toLocaleString()}</div>
+
                     </div>`;
+
                 });
+
             } else if (totalEarnings === 0) {
+
                 settlementHtml = '<div class="no-payment">タイトル未記入</div>';
+
             } else {
+
                 settlementHtml = '<div class="no-payment">精算なし（全員同額）</div>';
+
             }
+
             document.getElementById('titleSettlementDiv').innerHTML = settlementHtml;
+
         }
+
+ 
 
         // ===================== /TITLE =====================
 
+ 
+
         function renderRoleSettings() {
+
             const roles = [
+
                 { key: 'gold', label: '金', icon: '🥇' },
+
                 { key: 'silver', label: '銀', icon: '🥈' },
+
                 { key: 'bronze', label: '銅', icon: '🥉' },
+
                 { key: 'iron', label: '鉄', icon: '⚙️' },
+
                 { key: 'diamond', label: 'ダイ', icon: '💎' }
+
             ];
 
+ 
+
             let html = '';
+
             roles.forEach(role => {
+
                 html += `<div class="role-box">
+
                     <div>${role.icon}</div>
+
                     <input type="number" value="${olympicRoles[role.key]}"
+
                         onchange="olympicRoles['${role.key}'] = parseInt(this.value) || 0; calculateOlympic();">
+
                 </div>`;
+
             });
+
+ 
 
             document.getElementById('roleSettings').innerHTML = html;
+
         }
+
+ 
 
         function calculateOlympic() {
+
             const players = getPlayers();
+
             const currentHoles = holes; // 常に18ホール全体で集計
 
+ 
+
             const earnings = {};
+
             players.forEach(p => earnings[p] = 0);
 
+ 
+
             players.forEach(player => {
+
                 // olympicScoreData にプレイヤーキーがなければ補完
+
                 if (!olympicScoreData[player]) {
+
                     olympicScoreData[player] = {};
+
                     holes.forEach(h => { olympicScoreData[player][`hole_${h}`] = ''; });
+
                 }
+
                 currentHoles.forEach(hole => {
+
                     const role = olympicScoreData[player][`hole_${hole}`];
+
                     if (role) earnings[player] += olympicRoles[role] || 0;
+
                 });
+
             });
+
+ 
 
             let earningsHtml = '';
+
             players.forEach(player => {
+
                 earningsHtml += `<div class="earnings-card">
+
                     <div class="earnings-card-name">${player}</div>
+
                     <div class="earnings-card-amount">¥${earnings[player].toLocaleString()}</div>
+
                 </div>`;
+
             });
+
             document.getElementById('earningsGrid').innerHTML = earningsHtml;
 
+ 
+
             const total = Object.values(earnings).reduce((a, b) => a + b, 0);
+
             const average = total / players.length;
+
             const balances = {};
+
             players.forEach(p => balances[p] = earnings[p] - average);
 
+ 
+
             const settlement = [];
+
             const payers = players.filter(p => balances[p] < 0).sort((a, b) => balances[a] - balances[b]);
+
             const receivers = players.filter(p => balances[p] > 0).sort((a, b) => balances[b] - balances[a]);
 
+ 
+
             payers.forEach(payer => {
+
                 let remaining = Math.abs(balances[payer]);
+
                 receivers.forEach(receiver => {
+
                     if (remaining <= 0.01) return;
+
                     const canPay = Math.min(remaining, balances[receiver]);
+
                     settlement.push({ from: payer, to: receiver, amount: Math.round(canPay) });
+
                     balances[receiver] -= canPay;
+
                     remaining -= canPay;
+
                 });
+
             });
 
+ 
+
             let settlementHtml = '';
+
             if (settlement.length > 0) {
+
                 settlement.forEach(item => {
+
                     settlementHtml += `<div class="settlement-item">
+
                         <div>${item.from} → ${item.to}</div>
+
                         <div>¥${item.amount.toLocaleString()}</div>
+
                     </div>`;
+
                 });
+
             } else {
+
                 settlementHtml = '<div class="no-payment">NO PAYMENT</div>';
+
             }
+
             document.getElementById('settlementDiv').innerHTML = settlementHtml;
+
         }
+
+ 
 
         // ===================== TOTAL SETTLEMENT =====================
 
+ 
+
         // 各ゲームのプレイヤー別 "純収支" を返す共通ヘルパー
+
         // earnings = { playerName: 受取金額(正) }
+
         // nets     = { playerName: 受取-平均(正=黒字, 負=赤字) }
 
+ 
+
         function getOlympicEarnings() {
+
             const players = getPlayers();
+
             const e = {};
+
             players.forEach(p => {
+
                 if (!olympicScoreData[p]) { olympicScoreData[p] = {}; holes.forEach(h => { olympicScoreData[p][`hole_${h}`] = ''; }); }
+
                 e[p] = holes.reduce((s, h) => s + (olympicRoles[olympicScoreData[p][`hole_${h}`]] || 0), 0);
+
             });
+
             return e;
+
         }
+
+ 
 
         function getVegasEarnings() {
+
             const players = getPlayers();
+
             const hasStopper  = document.getElementById('vegasStopper').checked;
+
             const stopperDisp = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
+
             const ptVal       = parseInt(document.getElementById('vegasPointValue').value) || 1000;
 
+ 
+
             const totals = {};
+
             players.forEach(p => totals[p] = 0);
+
             holes.forEach(h => {
+
                 const { pair1, pair2 } = getVegasPairs(h);
+
                 let s1 = parseInt(formatTwoDigit(getHoleScore(pair1[0], h, hasStopper, stopperDisp), getHoleScore(pair1[1], h, hasStopper, stopperDisp)));
+
                 let s2 = parseInt(formatTwoDigit(getHoleScore(pair2[0], h, hasStopper, stopperDisp), getHoleScore(pair2[1], h, hasStopper, stopperDisp)));
+
                 const br1 = vegasData[pair1[0]]?.[`hole_${h}_br`] || vegasData[pair1[1]]?.[`hole_${h}_br`];
+
                 const br2 = vegasData[pair2[0]]?.[`hole_${h}_br`] || vegasData[pair2[1]]?.[`hole_${h}_br`];
+
                 if (br1) s1 = parseInt(reverseTwoDigit(s1.toString().padStart(2, '0')));
+
                 if (br2) s2 = parseInt(reverseTwoDigit(s2.toString().padStart(2, '0')));
+
                 pair1.forEach(p => totals[p] += s1);
+
                 pair2.forEach(p => totals[p] += s2);
+
             });
+
             // Vegasは低スコアが有利: 平均との差 × ptVal を収支とする
+
             const avg = Object.values(totals).reduce((a, b) => a + b, 0) / players.length;
+
             const e = {};
+
             players.forEach(p => e[p] = Math.round((avg - totals[p]) * ptVal));
+
             return e;
+
         }
+
+ 
 
         function getSkinsEarnings() {
+
             const players = getPlayers();
+
             const hasStopper  = document.getElementById('vegasStopper').checked;
+
             const stopperDisp = document.querySelector('input[name="stopperDisplay"]:checked')?.value || '9';
+
             const e = {};
+
             players.forEach(p => e[p] = 0);
+
             let carry = 0;
+
             holes.forEach(h => {
+
                 const base = skinsData[`hole_${h}_prize`] || 1000;
+
                 const prize = base + carry;
+
                 let scores = {}, min = Infinity;
+
                 players.forEach(p => { const sc = getHoleScore(p, h, hasStopper, stopperDisp); scores[p] = sc; min = Math.min(min, sc); });
+
                 let cnt = 0, best = '';
+
                 for (const p of players) { if (scores[p] === min) { cnt++; if (cnt === 1) best = p; } }
+
                 const winner = skinsData[`hole_${h}_winner`] || (cnt === 1 ? best : '');
+
                 if (winner) { e[winner] += prize; carry = 0; } else { carry += base; }
+
             });
+
             return e;
+
         }
+
+ 
 
         function getTitleEarnings() {
+
             const players = getPlayers();
+
             const e = {};
+
             players.forEach(p => {
+
                 e[p] = holes.reduce((s, h) => {
+
                     const v = titleData[`h${h}_${p}`];
+
                     if (v === 'nearpin') return s + titlePrizes.nearpin;
+
                     if (v === 'drakon')  return s + titlePrizes.drakon;
+
                     return s;
+
                 }, 0);
+
             });
+
             return e;
+
         }
+
+ 
 
         // 収支オブジェクト → 精算リスト（平均差額方式）
+
         function calcSettlement(earnings, players) {
+
             const total = Object.values(earnings).reduce((a, b) => a + b, 0);
+
             const avg   = total / players.length;
+
             const bal   = {};
+
             players.forEach(p => bal[p] = earnings[p] - avg);
+
             const payers    = players.filter(p => bal[p] < -0.01).sort((a, b) => bal[a] - bal[b]);
+
             const receivers = players.filter(p => bal[p] >  0.01).sort((a, b) => bal[b] - bal[a]);
+
             const list = [];
+
             const bc = { ...bal };
+
             payers.forEach(fr => {
+
                 let rem = Math.abs(bc[fr]);
+
                 receivers.forEach(to => {
+
                     if (rem <= 0.01 || bc[to] <= 0.01) return;
+
                     const amt = Math.min(rem, bc[to]);
+
                     list.push({ from: fr, to, amount: Math.round(amt) });
+
                     bc[to] -= amt; rem -= amt;
+
                 });
+
             });
+
             return list;
+
         }
+
+ 
 
         // Vegasは収支がすでに net 値なので専用の精算計算
+
         function calcVegasSettlement(nets, players) {
+
             const payers    = players.filter(p => nets[p] < -0.01).sort((a, b) => nets[a] - nets[b]);
+
             const receivers = players.filter(p => nets[p] >  0.01).sort((a, b) => nets[b] - nets[a]);
+
             const list = [];
+
             const bc = { ...nets };
+
             payers.forEach(fr => {
+
                 let rem = Math.abs(bc[fr]);
+
                 receivers.forEach(to => {
+
                     if (rem <= 0.01 || bc[to] <= 0.01) return;
+
                     const amt = Math.min(rem, bc[to]);
+
                     list.push({ from: fr, to, amount: Math.round(amt) });
+
                     bc[to] -= amt; rem -= amt;
+
                 });
+
             });
+
             return list;
+
         }
+
+ 
 
         // TOTAL タブ描画
+
         function renderTotalTab() {
+
             const players = getPlayers();
+
+ 
 
             const olyE  = getOlympicEarnings();
+
             const vegE  = getVegasEarnings();   // ← Vegas は既に net 値
+
             const skiE  = getSkinsEarnings();
+
             const titE  = getTitleEarnings();
 
+ 
+
             // 各ゲームの net（受取-平均 = 純損益）
+
             function toNets(e) {
+
                 const avg = Object.values(e).reduce((a, b) => a + b, 0) / players.length;
+
                 const n = {}; players.forEach(p => n[p] = Math.round(e[p] - avg)); return n;
+
             }
+
             const olyN = toNets(olyE);
+
             const vegN = vegE;           // Vegasは元から net
+
             const skiN = toNets(skiE);
+
             const titN = toNets(titE);
 
+ 
+
             // 合算
+
             const totalNets = {};
+
             players.forEach(p => totalNets[p] = (olyN[p] || 0) + (vegN[p] || 0) + (skiN[p] || 0) + (titN[p] || 0));
+
+ 
 
             // ───── 内訳テーブル ─────
+
             const fmt = v => (v > 0 ? `<span style="color:#006400;">+¥${v.toLocaleString()}</span>` : v < 0 ? `<span style="color:#cc0000;">-¥${Math.abs(v).toLocaleString()}</span>` : '<span style="color:#888;">¥0</span>');
 
+ 
+
             let html = `<thead><tr class="section-header">
+
                 <th>PLAYER</th><th>🥇 OLYMPIC</th><th>🎰 VEGAS</th><th>🏌️ SKINS</th><th>🏆 TITLE</th><th style="background:#222;">💰 合計</th>
+
             </tr></thead><tbody>`;
 
+ 
+
             players.forEach(p => {
+
                 const tot = totalNets[p];
+
                 const totStyle = tot > 0 ? 'color:#fff; background:#006400;' : tot < 0 ? 'color:#fff; background:#cc0000;' : 'color:#fff; background:#555;';
+
                 html += `<tr>
+
                     <td class="player-cell">${p}</td>
+
                     <td style="text-align:center; padding:10px;">${fmt(olyN[p])}</td>
+
                     <td style="text-align:center; padding:10px;">${fmt(vegN[p])}</td>
+
                     <td style="text-align:center; padding:10px;">${fmt(skiN[p])}</td>
+
                     <td style="text-align:center; padding:10px;">${fmt(titN[p])}</td>
+
                     <td style="text-align:center; padding:10px; font-weight:900; font-size:16px; ${totStyle}">${tot > 0 ? '+' : ''}¥${tot.toLocaleString()}</td>
+
                 </tr>`;
+
             });
+
             html += '</tbody>';
+
             document.getElementById('totalBreakdownTable').innerHTML = html;
 
+ 
+
             // ───── 合計精算 ─────
+
             const settlementList = calcVegasSettlement(totalNets, players);
+
             let sHtml = '';
+
             if (settlementList.length > 0) {
+
                 settlementList.forEach(item => {
+
                     sHtml += `<div class="settlement-item">
+
                         <div style="font-size:16px; font-weight:900;">${item.from} → ${item.to}</div>
+
                         <div style="font-size:18px; font-weight:900;">¥${item.amount.toLocaleString()}</div>
+
                     </div>`;
+
                 });
+
             } else if (Object.values(totalNets).every(v => v === 0)) {
+
                 sHtml = '<div class="no-payment">スコア未入力</div>';
+
             } else {
+
                 sHtml = '<div class="no-payment">精算なし（全員同額）</div>';
+
             }
+
             document.getElementById('totalSettlementDiv').innerHTML = sHtml;
+
         }
+
+ 
 
         // GAME END モーダル用のHTMLを生成（renderTotalTab と同じ計算）
+
         function buildTotalModalHtml() {
+
             const players = getPlayers();
+
             const olyE = getOlympicEarnings();
+
             const vegE = getVegasEarnings();
+
             const skiE = getSkinsEarnings();
+
             const titE = getTitleEarnings();
+
             function toNets(e) {
+
                 const avg = Object.values(e).reduce((a, b) => a + b, 0) / players.length;
+
                 const n = {}; players.forEach(p => n[p] = Math.round(e[p] - avg)); return n;
+
             }
+
             const olyN = toNets(olyE), vegN = vegE, skiN = toNets(skiE), titN = toNets(titE);
+
             const totalNets = {};
+
             players.forEach(p => totalNets[p] = (olyN[p] || 0) + (vegN[p] || 0) + (skiN[p] || 0) + (titN[p] || 0));
 
+ 
+
             const settlementList = calcVegasSettlement(totalNets, players);
+
             let html = '<div style="font-family:Arial; max-width:400px; margin:0 auto;">';
+
             html += '<h3 style="font-size:18px; font-weight:900; border-bottom:3px solid #000; padding-bottom:8px; margin-bottom:16px;">💰 TOTAL SETTLEMENT</h3>';
 
+ 
+
             // 内訳
+
             html += '<table style="width:100%; border-collapse:collapse; margin-bottom:16px; font-size:13px;">';
+
             html += '<tr style="background:#000; color:#fff; font-weight:900;"><th style="padding:6px;">PLAYER</th><th>🥇OLY</th><th>🎰VGS</th><th>🏌️SKN</th><th>🏆TTL</th><th>合計</th></tr>';
+
             players.forEach(p => {
+
                 const tot = totalNets[p];
+
                 const bg  = tot > 0 ? '#e6f4e6' : tot < 0 ? '#fce8e8' : '#f5f5f5';
+
                 const fmtM = v => (v > 0 ? `+${v.toLocaleString()}` : `${v.toLocaleString()}`);
+
                 html += `<tr style="background:${bg}; text-align:center;">
+
                     <td style="padding:6px; font-weight:900; border:1px solid #ccc;">${p}</td>
+
                     <td style="padding:6px; border:1px solid #ccc;">${fmtM(olyN[p])}</td>
+
                     <td style="padding:6px; border:1px solid #ccc;">${fmtM(vegN[p])}</td>
+
                     <td style="padding:6px; border:1px solid #ccc;">${fmtM(skiN[p])}</td>
+
                     <td style="padding:6px; border:1px solid #ccc;">${fmtM(titN[p])}</td>
+
                     <td style="padding:6px; font-weight:900; border:1px solid #ccc;">${tot > 0 ? '+' : ''}¥${tot.toLocaleString()}</td>
+
                 </tr>`;
+
             });
+
             html += '</table>';
 
+ 
+
             // 精算
+
             if (settlementList.length > 0) {
+
                 html += '<h4 style="font-weight:900; margin-bottom:8px;">支払い先：</h4>';
+
                 settlementList.forEach(item => {
+
                     html += `<div style="display:flex; justify-content:space-between; padding:10px 16px; margin-bottom:8px; background:#000; color:#fff; font-weight:900; font-size:15px;">
+
                         <span>${item.from} → ${item.to}</span>
+
                         <span>¥${item.amount.toLocaleString()}</span>
+
                     </div>`;
+
                 });
+
             } else {
+
                 html += '<div style="text-align:center; padding:16px; font-weight:900;">精算なし</div>';
+
             }
+
             html += '</div>';
+
             return html;
+
         }
+
+ 
 
         // ===================== /TOTAL SETTLEMENT =====================
 
+ 
+
         function switchTab(tabName) {
+
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+
             document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+
             document.getElementById(tabName).classList.add('active');
+
             event.target.classList.add('active');
+
+ 
 
             // タブ表示時のレンダリングのみ実行（初期化は行わない）
+
             // SCORE タブに戻る時も、Vegas と Skins を再計算（スコア変更が反映されるよう）
+
             if (tabName === 'score') {
+
                 renderScoreTable();
+
                 renderVegasTable(); // Vegas テーブルも最新化（表示はしないが計算用）
+
                 calculateVegas();
+
                 calculateSkins(); // Skins の計算も実行
+
             }
+
             if (tabName === 'olympic') { renderOlympicTable(); renderRoleSettings(); calculateOlympic(); }
+
             if (tabName === 'vegas') { renderVegasTable(); calculateVegas(); }
+
             if (tabName === 'skins') { renderSkinsPrizeGrid(); renderSkinsTable(); calculateSkins(); }
+
             if (tabName === 'nassau') { renderTitleSettings(); renderTitleTable(); calculateTitle(); }
+
             if (tabName === 'total')  { renderTotalTab(); }
+
         }
+
+ 
 
         function endGame() {
+
             // まず合計精算モーダルを表示
+
             const modalHtml = buildTotalModalHtml();
 
+ 
+
             // モーダル要素を生成
+
             const overlay = document.createElement('div');
+
             overlay.id = 'endGameModal';
+
             overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;';
 
+ 
+
             const box = document.createElement('div');
+
             box.style.cssText = 'background:#fff;border:6px solid #000;padding:28px;max-width:480px;width:92%;max-height:85vh;overflow-y:auto;border-radius:0;';
 
+ 
+
             box.innerHTML = modalHtml + `
+
                 <div style="margin-top:24px; display:flex; gap:12px; justify-content:center;">
+
                     <button id="endGameConfirmBtn"
+
                         style="padding:14px 32px; font-size:15px; font-weight:900; background:#000; color:#fff; border:4px solid #000; cursor:pointer;">
+
                         ✅ リセットしてゲーム終了
+
                     </button>
+
                     <button id="endGameCancelBtn"
+
                         style="padding:14px 32px; font-size:15px; font-weight:900; background:#fff; color:#000; border:4px solid #000; cursor:pointer;">
+
                         ✖ キャンセル
+
                     </button>
+
                 </div>`;
 
+ 
+
             overlay.appendChild(box);
+
             document.body.appendChild(overlay);
 
+ 
+
             // キャンセルボタン
+
             document.getElementById('endGameCancelBtn').addEventListener('click', () => {
+
                 document.body.removeChild(overlay);
+
             });
+
+ 
 
             // リセット確定ボタン
+
             document.getElementById('endGameConfirmBtn').addEventListener('click', () => {
+
                 document.body.removeChild(overlay);
 
+ 
+
                 // 全ゲームのデータを初期化
+
                 initScoreData();
+
                 initOlympicData();
+
                 initVegasData();
+
                 initSkinsData();
+
                 titleData = {};
 
+                clearGameState(); // localStorageも消去
+
+ 
+
                 // SCOREタブに切り替え
+
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+
                 document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+
                 document.getElementById('score').classList.add('active');
+
                 document.querySelectorAll('.tab-button')[0].classList.add('active');
 
+ 
+
                 alert('ゲーム終了。スコアをリセットしました。新しいゲームを開始できます。');
+
             });
+
         }
+
+ 
 
         function switchOlympicSection(section) {
+
             olympicSection = section;
+
             renderOlympicTable();
+
             calculateOlympic();
+
             event.target.parentElement.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+
             event.target.classList.add('active');
+
         }
+
+ 
 
         document.addEventListener('DOMContentLoaded', () => {
-            initScoreData();
-            initOlympicData();
-            initVegasData();
-            initSkinsData();
-            renderRoleSettings();
+
+            const restored = loadGameState();
+
+            if (restored) {
+
+                // 保存データあり → 全タブを再描画して復元
+
+                renderScoreTable();
+
+                renderOlympicTable();
+
+                calculateOlympic();
+
+                renderVegasTable();
+
+                renderSkinsPrizeGrid();
+
+                renderSkinsTable();
+
+                renderRoleSettings();
+
+                renderTitleSettings();
+
+                renderTitleTable();
+
+                calculateTitle();
+
+            } else {
+
+                // 保存データなし → 通常の初期化
+
+                initScoreData();
+
+                initOlympicData();
+
+                initVegasData();
+
+                initSkinsData();
+
+                renderRoleSettings();
+
+            }
+
+ 
+
+            // 入力変更をまとめてキャッチして自動保存（イベント委譲）
+
+            document.body.addEventListener('input',  saveGameState);
+
+            document.body.addEventListener('change', saveGameState);
+
+            // 念のため3秒ごとにも自動保存
+
+            setInterval(saveGameState, 3000);
+
         });
 
+ 
+
         // プレイヤー名が変更されたときだけ全初期化を実行（確認ダイアログ付き）
+
         const playerChangeListener = (e) => {
+
             if (confirm('プレイヤー名を変更すると、入力済みのスコアがすべてリセットされます。\n\n本当に変更してもよろしいですか？')) {
+
                 initScoreData();
+
                 initOlympicData();
+
                 initVegasData();
+
                 initSkinsData();
+
                 renderRoleSettings();
+
             } else {
+
                 // キャンセルされた場合は、元の値に戻す
+
                 e.target.value = e.target.value; // placeholder - 実装上は前回値に戻すが、簡易版のため
+
             }
+
         };
+
         document.getElementById('player1').addEventListener('change', playerChangeListener);
+
         document.getElementById('player2').addEventListener('change', playerChangeListener);
+
         document.getElementById('player3').addEventListener('change', playerChangeListener);
+
         document.getElementById('player4').addEventListener('change', playerChangeListener);
+
     </script>
 
+ 
+
     <!-- ===== Service Worker 登録 (PWA オフライン対応) ===== -->
+
     <script>
+
         if ('serviceWorker' in navigator) {
+
             window.addEventListener('load', () => {
+
                 navigator.serviceWorker.register('/OMK-GLF-APP/service-worker.js', {
+
                     scope: '/OMK-GLF-APP/'
+
                 })
+
                 .then(reg => console.log('[PWA] Service Worker 登録完了:', reg.scope))
+
                 .catch(err => console.warn('[PWA] Service Worker 登録失敗:', err));
+
             });
+
         }
+
     </script>
+
     <!-- ===== /Service Worker 登録 ===== -->
+
 </body>
+
 </html>
+
+ 
